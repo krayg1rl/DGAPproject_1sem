@@ -24,7 +24,7 @@ class Main_character:
 
     def move(self, objects, Akey, Wkey, Skey, Dkey):
         pass
-        
+
 
 
 
