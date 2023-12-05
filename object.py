@@ -1,13 +1,16 @@
 import pygame as pg
-
+WIDTH = 1280
+HEIGHT = 720
 class Object:
-    def __init__(self, screen: pg.Surface):
-        self.position = pg.Rect(0, 0, 0, 0)
+    def __init__(self, screen: pg.Surface, image):
+
         self.speed = pg.Vector2(0, 0)
-        #self.image =
+        self.image = image
+        self.position = image.get_rect(center = (WIDTH/2, HEIGHT/2))
+        self.screen = screen
 
     def draw(self):
-        pass
+        self.screen.blit(self.image, self.position)
 
 
 class NPC(Object):
@@ -17,11 +20,12 @@ class NPC(Object):
 
 class Main_character:
 
-    def __init__(self):
-        self.position = pg.Rect(0, 0, 0, 0)
-        self.speed = pg.Vector2(0, 0)
-        #self.image = pg
+    def __init__(self, screen: pg.Surface, image):
 
+        self.speed = pg.Vector2(0, 0)
+        self.image = image
+        self.position = image.get_rect(center = (100, 100))
+        self.screen = screen
     def move(self, objects, Akey, Wkey, Skey, Dkey):
         leftcrash = 0
         rightcrash = 0
@@ -60,7 +64,8 @@ class Main_character:
 
 
 
-
+    def draw(self):
+        self.screen.blit(self.image, self.position)
 
 
 

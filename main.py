@@ -1,27 +1,44 @@
 """
 the main loop should be here
 """
+
+from object import Object
+from object import Main_character
 import pygame as pg
+
 WIDTH = 1280
 HEIGHT = 720
 FPS = 30
 
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
-background = pg.transform.scale(pg.image.load("images/background.jpg"), (WIDTH, HEIGHT))
+background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
+desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (300, 300))
+hero_image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (80, 200))
 clock = pg.time.Clock()
 finished = False
+objects =[]
+Table = Object(screen, desk_image)
+objects.append(Table)
 
+hero = Main_character(screen, hero_image)
+hero.speed.y=30
+hero.speed.x=30
 Akey = 0
 Skey = 0
 Dkey = 0
 Wkey = 0
 Kspace = 0
 
+
 while not finished:
     # TODO
     #drawing of objects should be here
-
+    screen.blit(background, (0, 0))
+    for obj in objects:
+        obj.draw()
+    hero.draw()
+    pg.display.update()
     # Reaction to keys
     clock.tick(FPS)
     for event in pg.event.get():
@@ -50,3 +67,5 @@ while not finished:
                 Dkey = 0
             if event.key == pg.K_w:
                 Wkey = 0
+
+    hero.move(objects, Akey, Wkey, Skey, Dkey)
