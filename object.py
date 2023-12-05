@@ -4,7 +4,7 @@ class Object:
     def __init__(self, screen: pg.Surface):
         self.position = pg.Rect(0, 0, 0, 0)
         self.speed = pg.Vector2(0, 0)
-        self.image =
+        #self.image =
 
     def draw(self):
         pass
