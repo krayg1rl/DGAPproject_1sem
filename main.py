@@ -4,6 +4,7 @@ the main loop should be here
 
 from object import Object
 from object import Main_character
+from object import NPC
 import pygame as pg
 import time
 
@@ -17,6 +18,7 @@ pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (100, 100))
+scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 
 clock = pg.time.Clock()
 
@@ -24,6 +26,10 @@ objects = []
 
 Table = Object(screen, desk_image)
 objects.append(Table)
+
+npc = NPC(Object(screen, desk_image), Object(screen, scanner_image))
+objects.append(npc.obj)
+objects.append(npc.scanner)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
@@ -77,7 +83,7 @@ def handle_events(events):
                 keys_pressed['Wkey'] = False
 
     hero.move(objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
-
+    npc.move()
 
 def timer():
     global start_time, time_left
