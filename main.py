@@ -16,8 +16,7 @@ TIME_LIMIT = 600  # In seconds
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
-desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (300, 300))
-hero_image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (80, 200))
+desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (100, 100))
 
 clock = pg.time.Clock()
 
@@ -34,7 +33,7 @@ time_left = TIME_LIMIT
 
 finished = False
 
-hero = Main_character(screen, hero_image)
+hero = Main_character(screen)
 hero.speed.y = 30
 hero.speed.x = 30
 
