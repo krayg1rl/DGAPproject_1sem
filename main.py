@@ -4,6 +4,7 @@ the main loop should be here
 
 from object import Object
 from object import Main_character
+from object import NPC
 import pygame as pg
 
 WIDTH = 1280
@@ -13,13 +14,17 @@ FPS = 30
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
-desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (300, 300))
-hero_image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (80, 200))
+desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
+hero_image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (75, 145))
 clock = pg.time.Clock()
 finished = False
 objects =[]
 Table = Object(screen, desk_image)
 objects.append(Table)
+
+npc = NPC(Object(screen, hero_image))
+objects.append(npc.obj)
+
 
 hero = Main_character(screen, hero_image)
 hero.speed.y=30
@@ -69,3 +74,4 @@ while not finished:
                 Wkey = 0
 
     hero.move(objects, Akey, Wkey, Skey, Dkey)
+    npc.move()
