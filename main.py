@@ -5,23 +5,35 @@ the main loop should be here
 from object import Object
 from object import Main_character
 import pygame as pg
+import time
 
 WIDTH = 1280
 HEIGHT = 720
 FPS = 30
 
+TIME_LIMIT = 600  # In seconds
+
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
-desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (300, 300))
-hero_image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (80, 200))
+desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (100, 100))
+
 clock = pg.time.Clock()
-finished = False
+
 objects = []
+
 Table = Object(screen, desk_image)
 objects.append(Table)
 
-hero = Main_character(screen, hero_image)
+# Font for displaying timer on board
+timer_font = pg.font.SysFont('calibri', 50)
+
+start_time = pg.time.get_ticks()
+time_left = TIME_LIMIT
+
+finished = False
+
+hero = Main_character(screen)
 hero.speed.y = 30
 hero.speed.x = 30
 
@@ -67,10 +79,27 @@ def handle_events(events):
     hero.move(objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
 
 
+def timer():
+    global start_time, time_left
+
+    if time_left <= 0:
+        start_time = pg.time.get_ticks()
+        time_left = TIME_LIMIT
+
+    time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
+
+    time_passed = timer_font.render('Timer: ' + str(round(time_left, 2)), True, (255, 255, 255, 255))
+
+    screen.blit(time_passed, (180, 53))
+
+
 while not finished:
     # TODO
     #drawing of objects should be here
     screen.blit(background, (0, 0))
+
+    timer()
+
     for obj in objects:
         obj.draw()
     hero.draw()
