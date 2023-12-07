@@ -12,7 +12,7 @@ WIDTH = 1280
 HEIGHT = 720
 FPS = 30
 
-TIME_LIMIT = 600  # In seconds
+TIME_LIMIT = 120  # In seconds
 
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -94,7 +94,16 @@ def timer():
 
     time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
 
-    time_passed = timer_font.render('Timer: ' + str(round(time_left, 2)), True, (255, 255, 255, 255))
+    time_left_minutes = str(int(int(time_left) // 60))
+    time_left_seconds = str(int(int(time_left) % 60))
+    time_left_milliseconds = str(int((time_left - 60 * int(time_left_minutes) - int(time_left_seconds)) * 100) % 100)
+
+    if len(time_left_seconds) == 1:
+        time_left_seconds = '0' + time_left_seconds
+    if len(time_left_minutes) == 1:
+        time_left_minutes = '0' + time_left_minutes
+
+    time_passed = timer_font.render('Timer: ' + time_left_minutes + ':' + time_left_seconds + ':' + time_left_milliseconds, True, (255, 255, 255, 255))
 
     screen.blit(time_passed, (180, 53))
 
