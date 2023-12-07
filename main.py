@@ -29,7 +29,7 @@ objects.append(Table)
 
 npc = NPC(Object(screen, desk_image), Object(screen, scanner_image))
 objects.append(npc.obj)
-objects.append(npc.scanner)
+objects.append(npc.sc_visible)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
