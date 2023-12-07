@@ -115,4 +115,4 @@ class Main_character:
         self.screen.blit(self.image, (self.position.x, self.position.y-self.position.height))
 
 
-
+#class Artefact
