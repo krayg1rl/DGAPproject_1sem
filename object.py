@@ -70,7 +70,6 @@ class NPC:
         pass
 
     def move(self):
-
         self.obj.position.x = self.pos.x
         self.obj.position.y = self.pos.y
         if self.state == 0:
