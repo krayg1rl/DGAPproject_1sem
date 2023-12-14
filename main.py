@@ -103,9 +103,10 @@ def handle_events(events):
 
     hero.cheat(keys_pressed['SPACE'])
 
-    print(hero.points)
+    #print(hero.points)
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
     karasev.move()
+    karasev.check(hero)
 
 
 def timer():

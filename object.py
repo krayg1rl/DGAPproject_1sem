@@ -50,7 +50,6 @@ class NPC:
         self.pos = pg.Vector2(self.obj.position.x, self.obj.position.y)
 
         self.turn_speed = 5
-        self.look_angle = 90
         self.an = 0
         self.delta_an = 0
         self.target_an = 0
@@ -110,12 +109,24 @@ class Teacher:
     def __init__(self, npc, scanner):
         self.npc = npc
         self.scanner = scanner
+        self.scanpos = pg.Vector2(50, 20)
         self.sc_visible = Object(scanner.screen, scanner.image)
+
+        self.look_angle = 90
+        self.vision_range = 300
 
     def move(self):
         self.npc.move()
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + pg.Vector2(55, 20), pg.Vector2(0, 125))
+        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
         self.sc_visible.position = new_rect
+
+    def check(self, student):
+        rel_pos = self.npc.pos + self.scanpos - pg.Vector2(student.position.x + student.position.width/2, student.position.y + student.position.height/2)
+        rel_angle = math.atan2(rel_pos.y, rel_pos.x) * 180 / math.pi + 90
+        if rel_angle < 0:
+            rel_angle += 360
+        return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
+
 
 
 
