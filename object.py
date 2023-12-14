@@ -10,6 +10,8 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
 
 desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
+chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 280 + int(i/6)*200 + rd.random()*15) for i in range(18)]
+
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
 
@@ -50,7 +52,6 @@ class NPC:
         self.pos = pg.Vector2(self.obj.position.x, self.obj.position.y)
 
         self.turn_speed = 5
-        self.look_angle = 90
         self.an = 0
         self.delta_an = 0
         self.target_an = 0
@@ -110,14 +111,30 @@ class Teacher:
     def __init__(self, npc, scanner):
         self.npc = npc
         self.scanner = scanner
+        self.scanpos = pg.Vector2(50, 20)
         self.sc_visible = Object(scanner.screen, scanner.image)
+
+        self.look_angle = 90
+        self.vision_range = 300
 
     def move(self):
         self.npc.move()
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + pg.Vector2(55, 20), pg.Vector2(0, 125))
+        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
         self.sc_visible.position = new_rect
 
+    def check(self, student):
+        rel_pos = self.npc.pos + self.scanpos - pg.Vector2(student.position.x + student.position.width/2, student.position.y + student.position.height/2)
+        rel_angle = math.atan2(rel_pos.y, rel_pos.x) * 180 / math.pi + 90
+        if rel_angle < 0:
+            rel_angle += 360
+        return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
 
+
+class Interactive:
+    def __init__(self, object):
+        self.obj = object
+        self.int_box = pg.Rect(0, 0, 0, 0)
+        # TODO
 
 
 class Main_character:
@@ -131,53 +148,78 @@ class Main_character:
         self.screen = screen
         self.points = 0
         self.point_speed = 1
-    def move(self, objects, Akey, Wkey, Skey, Dkey):
+    def meet_Obj(self,objects, Akey,Wkey, Skey, Dkey, leftcrash, rightcrash, topcrash, bottomcrash):
+        for obj in objects:
+            if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
+                    self.position.left <= obj.position.right) and (self.position.left >= obj.position.centerx)):
+                leftcrash = True
+            if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
+                    self.position.right >= obj.position.left) and (self.position.right <= obj.position.centerx)):
+                rightcrash = True
+            if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
+                    self.position.top <= obj.position.bottom) and (self.position.top >= obj.position.centery)):
+                topcrash = True
+            if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
+                    self.position.bottom >= obj.position.top) and (self.position.bottom <= obj.position.centery)):
+                bottomcrash = True
+
+        return leftcrash, rightcrash, bottomcrash, topcrash
+
+
+
+    def move(self, objects, Akey, Wkey, Skey, Dkey, Space):
         leftcrash = 0
         rightcrash = 0
         bottomcrash = 0
         topcrash = 0
-        if(self.position.left<=0):
-            leftcrash=True
-        if(self.position.right>=WIDTH):
-            rightcrash = True
-        if(self.position.top<=150):
-            topcrash = True
-        if(self.position.bottom>=HEIGHT):
-            bottomcrash = True
-        for obj in objects:
-            if ((self.position.top< obj.position.bottom) and (self.position.bottom > obj.position.top) and(self.position.left<=obj.position.right) and (self.position.left>=obj.position.centerx)):
-                leftcrash = True
-            if ((self.position.top< obj.position.bottom) and (self.position.bottom > obj.position.top) and(self.position.right>=obj.position.left) and (self.position.right<=obj.position.centerx)):
-                rightcrash = True
-            if((self.position.left<obj.position.right) and (self.position.right>obj.position.left) and (self.position.top<=obj.position.bottom) and (self.position.top>=obj.position.centery)):
-                topcrash = True
-            if((self.position.left<obj.position.right) and (self.position.right>obj.position.left) and (self.position.bottom>=obj.position.top) and (self.position.bottom<=obj.position.centery)):
-                bottomcrash = True
 
-        if(Akey and not Dkey):
-            if(leftcrash):
-                #self.position.x=self.position.x + self.speed.x
-                pass
-            else:
-                self.position.x-=self.speed.x
-        elif(Dkey and not Akey):
-            if(rightcrash):
-                #self.position.x = self.position.x -  self.speed.x
-                pass
-            else:
-                self.position.x+=self.speed.x
-        if(Wkey and not Skey):
-            if(topcrash):
-                #self.position.y = self.position.y+self.speed.y
-                pass
-            else:
-                self.position.y-=self.speed.y
-        elif(Skey and not Wkey):
-            if(bottomcrash):
-                #self.position.y = self.position.y-self.speed.y
-                pass
-            else:
-                self.position.y += self.speed.y
+        if(not Space):
+            if (self.position.left <= 0):
+                leftcrash = True
+            if (self.position.right >= WIDTH):
+                rightcrash = True
+            if (self.position.top <= 150):
+                topcrash = True
+            if (self.position.bottom >= HEIGHT):
+                bottomcrash = True
+            for obj in objects:
+                if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
+                        self.position.left <= obj.position.right) and (self.position.left >= obj.position.centerx)):
+                    leftcrash = True
+                if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
+                        self.position.right >= obj.position.left) and (self.position.right <= obj.position.centerx)):
+                    rightcrash = True
+                if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
+                        self.position.top <= obj.position.bottom) and (self.position.top >= obj.position.centery)):
+                    topcrash = True
+                if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
+                        self.position.bottom >= obj.position.top) and (self.position.bottom <= obj.position.centery)):
+                    bottomcrash = True
+
+            if (Akey and not Dkey):
+                if (leftcrash):
+                    # self.position.x=self.position.x + self.speed.x
+                    pass
+                else:
+                    self.position.x -= self.speed.x
+            elif (Dkey and not Akey):
+                if (rightcrash):
+                    # self.position.x = self.position.x -  self.speed.x
+                    pass
+                else:
+                    self.position.x += self.speed.x
+            if (Wkey and not Skey):
+                if (topcrash):
+                    # self.position.y = self.position.y+self.speed.y
+                    pass
+                else:
+                    self.position.y -= self.speed.y
+            elif (Skey and not Wkey):
+                if (bottomcrash):
+                    # self.position.y = self.position.y-self.speed.y
+                    pass
+                else:
+                    self.position.y += self.speed.y
 
 
 

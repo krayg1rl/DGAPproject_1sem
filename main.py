@@ -22,6 +22,7 @@ menu_background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, 
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
+chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 
 # load button images
 options_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
@@ -54,6 +55,11 @@ for i in desks:
     table.setPos(i.x, i.y)
     visible_objects.append(table)
     physical_objects.append(table)
+
+for i in chairs:
+    chair = Object(screen, chair_img)
+    chair.setPos(i.x, i.y)
+    visible_objects.append(chair)
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image))
@@ -114,9 +120,12 @@ def handle_events(events):
 
     hero.cheat(keys_pressed['SPACE'])
 
+
     print(hero.points)
-    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
+    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
+
     karasev.move()
+    karasev.check(hero)
 
 
 def timer():
@@ -145,6 +154,8 @@ def timer():
 
 
 while not finished:
+    # TODO
+    # drawing of objects should be here
 
     clock.tick(FPS)
 
@@ -156,7 +167,7 @@ while not finished:
         if pause_game_button.draw(screen):
             menu_state = 'pause'
 
-        hero_point = str(hero.points)
+        hero_point = str(hero.points/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
