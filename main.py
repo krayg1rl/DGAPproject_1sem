@@ -132,6 +132,7 @@ def timer():
     global start_time, time_left
 
     if time_left <= 0:
+        # place to call function which reacts on spotting the hero
         start_time = pg.time.get_ticks()
         time_left = TIME_LIMIT
 
@@ -154,8 +155,6 @@ def timer():
 
 
 while not finished:
-    # TODO
-    # drawing of objects should be here
 
     clock.tick(FPS)
 
@@ -166,6 +165,7 @@ while not finished:
 
         if pause_game_button.draw(screen):
             menu_state = 'pause'
+            pause_time = pg.time.get_ticks()
 
         hero_point = str(hero.points/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
@@ -178,12 +178,16 @@ while not finished:
         handle_events(pg.event.get())
 
     if menu_state == 'pause':
+
+        new_start_time = (pg.time.get_ticks() - pause_time)
+
         for obj in visible_objects:
             obj.draw()
         hero.draw()
 
         if continue_game_button.draw(screen):
             menu_state = 'game'
+            start_time += new_start_time
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
