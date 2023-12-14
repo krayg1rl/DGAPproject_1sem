@@ -130,6 +130,8 @@ class Main_character:
         self.position = self.image.get_rect(center = (100, 100))
         self.position.height =self.position.height/2
         self.screen = screen
+        self.points = 0
+        self.point_speed = 1
     def move(self, objects, Akey, Wkey, Skey, Dkey):
         leftcrash = 0
         rightcrash = 0
@@ -184,4 +186,7 @@ class Main_character:
         self.screen.blit(self.image, (self.position.x, self.position.y-self.position.height))
 
 
-#class Artefact
+    def cheat(self, Spacekey):
+        if(Spacekey):
+            self.points+= self.point_speed
+
