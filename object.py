@@ -8,6 +8,8 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
                      pg.Vector2(400, 300), pg.Vector2(1000, 300),
                      pg.Vector2(400, 500), pg.Vector2(1000, 500)]
 
+desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
+
 def rotate(surface, angle, pivot, offset):
     """Rotate the surface around the pivot point.
 
@@ -32,6 +34,10 @@ class Object:
 
     def draw(self):
         self.screen.blit(self.image, self.position)
+
+    def setPos(self, x, y):
+        self.position.x = x
+        self.position.y = y
 
 
 class NPC:
@@ -68,29 +74,37 @@ class NPC:
         self.obj.position.x = self.pos.x
         self.obj.position.y = self.pos.y
 
+
         self.delta_an = 0
+
+        print(self.an, self.target_an)
+        self.delta_an = 1
+        if self.target_an - self.an < 0 and self.target_an - self.an > -180:
+            self.delta_an = -1
+
+
         if self.sleepframes == 0:
             if math.fabs(self.pos.x - self.curr_target.x) > 1.1 * self.vel_max.x:
                 self.target_an = 180 + 90 * math.copysign(1, self.curr_target.x - self.pos.x)
                 if math.fabs(self.an - self.target_an) < 4:
                     self.pos.x += math.copysign(self.vel_max.x, self.curr_target.x - self.pos.x)
                 else:
-                    self.an += self.turn_speed
-                    self.delta_an = self.turn_speed
+                    self.delta_an *= self.turn_speed
+                    self.an += self.delta_an
             elif math.fabs(self.pos.y - self.curr_target.y) > 1.1 * self.vel_max.y:
                 self.target_an = 90 - 90 * math.copysign(1, self.curr_target.y - self.pos.y)
                 if math.fabs(self.an - self.target_an) < 4:
                     self.pos.y += math.copysign(self.vel_max.y, self.curr_target.y - self.pos.y)
                 else:
-                    self.delta_an = self.turn_speed
-                    self.an += self.turn_speed
+                    self.delta_an *= self.turn_speed
+                    self.an += self.delta_an
             else:
                 self.new_target(self.waypoints[rd.randint(0, len(self.waypoints) - 1)])
         else:
             self.sleepframes -= 1
 
         #self.sc_visible.image = pg.transform.rotate(self.scanner.image, self.an)
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.an, self.pos, pg.Vector2(0, 125))
+        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.an, self.pos + pg.Vector2(55, 20), pg.Vector2(0, 125))
         self.sc_visible.position = new_rect
 
         if self.an > 359:
