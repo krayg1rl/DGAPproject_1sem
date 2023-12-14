@@ -35,9 +35,10 @@ for i in desks:
     visible_objects.append(table)
     physical_objects.append(table)
 
-npc = NPC(Object(screen, prep_image), Object(screen, scanner_image))
+npc = NPC(Object(screen, prep_image))
+karasev = Teacher(npc, Object(screen, scanner_image))
 visible_objects.append(npc.obj)
-visible_objects.append(npc.sc_visible)
+visible_objects.append(karasev.sc_visible)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
@@ -91,7 +92,7 @@ def handle_events(events):
                 keys_pressed['Wkey'] = False
 
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
-    npc.move()
+    karasev.move()
 
 def timer():
     global start_time, time_left

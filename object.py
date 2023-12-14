@@ -10,6 +10,9 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
 
 desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
+def is_close(a, b, margin):
+    return math.fabs(a-b) < margin
+
 def rotate(surface, angle, pivot, offset):
     """Rotate the surface around the pivot point.
 
@@ -41,10 +44,8 @@ class Object:
 
 
 class NPC:
-    def __init__(self, object, scanner):
+    def __init__(self, object):
         self.obj = object
-        self.scanner = scanner
-        self.sc_visible = Object(scanner.screen, scanner.image)
 
         self.pos = pg.Vector2(self.obj.position.x, self.obj.position.y)
 
@@ -59,6 +60,8 @@ class NPC:
         self.max_sleepframes = 30
         self.sleepframes = 0
 
+        self.state = 0  # 0=sleeping, 1=moving, 2=turning, 3=looking around
+
     def new_target(self, target):
         self.curr_target = target
         self.sleepframes = self.max_sleepframes
@@ -68,47 +71,54 @@ class NPC:
 
     def move(self):
 
-        self.scanner.position.x = self.pos.x
-        self.scanner.position.y = self.pos.y
-
         self.obj.position.x = self.pos.x
         self.obj.position.y = self.pos.y
-
-        print(self.an, self.target_an)
-        self.delta_an = 1
-        if self.target_an - self.an < 0 and self.target_an - self.an > -180:
-            self.delta_an = -1
-
-        if self.sleepframes == 0:
-            if math.fabs(self.pos.x - self.curr_target.x) > 1.1 * self.vel_max.x:
-                self.target_an = 180 + 90 * math.copysign(1, self.curr_target.x - self.pos.x)
-                if math.fabs(self.an - self.target_an) < 4:
-                    self.pos.x += math.copysign(self.vel_max.x, self.curr_target.x - self.pos.x)
-                else:
-                    self.delta_an *= self.turn_speed
-                    self.an += self.delta_an
-            elif math.fabs(self.pos.y - self.curr_target.y) > 1.1 * self.vel_max.y:
-                self.target_an = 90 - 90 * math.copysign(1, self.curr_target.y - self.pos.y)
-                if math.fabs(self.an - self.target_an) < 4:
-                    self.pos.y += math.copysign(self.vel_max.y, self.curr_target.y - self.pos.y)
-                else:
-                    self.delta_an *= self.turn_speed
-                    self.an += self.delta_an
+        if self.state == 0:
+            if self.sleepframes > 0:
+                self.sleepframes -= 1
             else:
-                self.new_target(self.waypoints[rd.randint(0, len(self.waypoints) - 1)])
-        else:
-            self.sleepframes -= 1
+                self.state = 1
+        elif self.state == 1:
+            if not is_close(self.an, self.target_an, self.turn_speed * 0.6):
+                self.state = 2
+            elif not is_close(self.curr_target.x, self.pos.x, self.vel_max.x * 0.6):
+                self.target_an = 180 + 90 * math.copysign(1, self.curr_target.x - self.pos.x)
+                self.pos.x += math.copysign(self.vel_max.x, self.curr_target.x - self.pos.x)
+            elif not is_close(self.curr_target.y, self.pos.y, self.vel_max.y * 0.6):
+                self.target_an = 90 - 90 * math.copysign(1, self.curr_target.y - self.pos.y)
+                self.pos.y += math.copysign(self.vel_max.y, self.curr_target.y - self.pos.y)
+            else:
+                self.state = 0
+                self.new_target(self.waypoints[rd.randint(0, len(teacher_waypoints) - 1)])
+        if self.state == 2:
+            if is_close(self.an, self.target_an, self.turn_speed * 0.6):
+                self.state = 1
+            else:
+                if 0 > self.target_an - self.an > -180:
+                    self.delta_an = -1
+                else:
+                    self.delta_an = 1
+                self.delta_an *= self.turn_speed
+                self.an += self.delta_an
 
-        #self.sc_visible.image = pg.transform.rotate(self.scanner.image, self.an)
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.an, self.pos + pg.Vector2(55, 20), pg.Vector2(0, 125))
-        self.sc_visible.position = new_rect
+                if self.an > 359:
+                    self.an -= 360
 
-        if self.an > 359:
-            self.an -= 360
+
 
 
 class Teacher:
-    pass
+    def __init__(self, npc, scanner):
+        self.npc = npc
+        self.scanner = scanner
+        self.sc_visible = Object(scanner.screen, scanner.image)
+
+    def move(self):
+        self.npc.move()
+        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + pg.Vector2(55, 20), pg.Vector2(0, 125))
+        self.sc_visible.position = new_rect
+
+
 
 
 class Main_character:
