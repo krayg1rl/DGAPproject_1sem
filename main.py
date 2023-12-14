@@ -18,18 +18,24 @@ pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (100, 100))
+prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
+
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 
 clock = pg.time.Clock()
 
 objects = []
 
-Table = Object(screen, desk_image)
-objects.append(Table)
+physical_objects = []
+visible_objects = []
 
-npc = NPC(Object(screen, desk_image), Object(screen, scanner_image))
-objects.append(npc.obj)
-objects.append(npc.sc_visible)
+Table = Object(screen, desk_image)
+physical_objects.append(Table)
+visible_objects.append(Table)
+
+npc = NPC(Object(screen, prep_image), Object(screen, scanner_image))
+visible_objects.append(npc.obj)
+visible_objects.append(npc.sc_visible)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
@@ -82,7 +88,7 @@ def handle_events(events):
             if event.key == pg.K_w:
                 keys_pressed['Wkey'] = False
 
-    hero.move(objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
+    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
     npc.move()
 
 def timer():
@@ -115,7 +121,7 @@ while not finished:
 
     timer()
 
-    for obj in objects:
+    for obj in visible_objects:
         obj.draw()
     hero.draw()
     pg.display.update()

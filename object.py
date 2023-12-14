@@ -98,12 +98,16 @@ class NPC:
             self.an -= 360
 
 
+class Teacher:
+    pass
+
+
 class Main_character:
 
     def __init__(self, screen: pg.Surface):
 
         self.speed = pg.Vector2(0, 0)
-        self.image = pg.transform.scale(pg.image.load("pictures/prep1.png"), (80, 100))
+        self.image = pg.transform.scale(pg.image.load("pictures/hero.png"), (80, 100))
         self.position = self.image.get_rect(center = (100, 100))
         self.position.height =self.position.height/2
         self.screen = screen
