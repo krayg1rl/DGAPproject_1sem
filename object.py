@@ -10,6 +10,8 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
 
 desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
+chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 280 + int(i/6)*200 + rd.random()*15) for i in range(18)]
+
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
 
@@ -128,7 +130,11 @@ class Teacher:
         return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
 
 
-
+class Interactive:
+    def __init__(self, object):
+        self.obj = object
+        self.int_box = pg.Rect(0, 0, 0, 0)
+        # TODO
 
 
 class Main_character:

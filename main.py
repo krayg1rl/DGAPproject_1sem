@@ -22,6 +22,7 @@ menu_background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, 
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
+chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 
 # load button images
 options_img = pg.image.load("pictures/button_options.png").convert_alpha()
@@ -43,6 +44,11 @@ for i in desks:
     table.setPos(i.x, i.y)
     visible_objects.append(table)
     physical_objects.append(table)
+
+for i in chairs:
+    chair = Object(screen, chair_img)
+    chair.setPos(i.x, i.y)
+    visible_objects.append(chair)
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image))
