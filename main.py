@@ -104,7 +104,7 @@ def handle_events(events):
     hero.cheat(keys_pressed['SPACE'])
 
     print(hero.points)
-    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
+    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
     karasev.move()
 
 
@@ -144,7 +144,7 @@ while not finished:
 
         timer()
 
-        hero_point = str(hero.points)
+        hero_point = str(hero.points/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
