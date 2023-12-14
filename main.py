@@ -2,9 +2,7 @@
 the main loop should be here
 """
 
-from object import Object
-from object import Main_character
-from object import NPC
+from object import *
 import pygame as pg
 import time
 
@@ -17,7 +15,7 @@ TIME_LIMIT = 120  # In seconds
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
-desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (100, 100))
+desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
@@ -29,9 +27,13 @@ objects = []
 physical_objects = []
 visible_objects = []
 
-Table = Object(screen, desk_image)
-physical_objects.append(Table)
-visible_objects.append(Table)
+tables = []
+
+for i in desks:
+    table = Object(screen, desk_image)
+    table.setPos(i.x, i.y)
+    visible_objects.append(table)
+    physical_objects.append(table)
 
 npc = NPC(Object(screen, prep_image), Object(screen, scanner_image))
 visible_objects.append(npc.obj)
