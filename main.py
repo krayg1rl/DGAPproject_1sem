@@ -39,6 +39,7 @@ visible_objects.append(npc.sc_visible)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
+points_font =pg.font.SysFont('calibri', 50)
 
 start_time = pg.time.get_ticks()
 time_left = TIME_LIMIT
@@ -66,10 +67,7 @@ def handle_events(events):
             finished = True
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
-                if keys_pressed['SPACE']:
-                    keys_pressed['SPACE'] = True
-                else:
-                    keys_pressed['SPACE'] = False
+                keys_pressed['SPACE'] = True
             if event.key == pg.K_a:
                 keys_pressed['Akey'] = True
             if event.key == pg.K_s:
@@ -79,6 +77,8 @@ def handle_events(events):
             if event.key == pg.K_w:
                 keys_pressed['Wkey'] = True
         elif event.type == pg.KEYUP:
+            if event.key == pg.K_SPACE:
+                keys_pressed['SPACE'] = False
             if event.key == pg.K_a:
                 keys_pressed['Akey'] = False
             if event.key == pg.K_s:
@@ -88,6 +88,9 @@ def handle_events(events):
             if event.key == pg.K_w:
                 keys_pressed['Wkey'] = False
 
+    hero.cheat(keys_pressed['SPACE'])
+
+    print(hero.points)
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'])
     npc.move()
 
@@ -120,6 +123,9 @@ while not finished:
     screen.blit(background, (0, 0))
 
     timer()
+    hero_point = str(hero.points)
+    points = points_font.render(hero_point, True, (255, 255, 255, 255))
+    screen.blit(points, (1000, 53))
 
     for obj in visible_objects:
         obj.draw()

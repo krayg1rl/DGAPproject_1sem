@@ -68,7 +68,6 @@ class NPC:
         self.obj.position.x = self.pos.x
         self.obj.position.y = self.pos.y
 
-        print(self.an, self.target_an)
         self.delta_an = 0
         if self.sleepframes == 0:
             if math.fabs(self.pos.x - self.curr_target.x) > 1.1 * self.vel_max.x:
@@ -111,6 +110,8 @@ class Main_character:
         self.position = self.image.get_rect(center = (100, 100))
         self.position.height =self.position.height/2
         self.screen = screen
+        self.points = 0
+        self.point_speed = 1
     def move(self, objects, Akey, Wkey, Skey, Dkey):
         leftcrash = 0
         rightcrash = 0
@@ -164,4 +165,8 @@ class Main_character:
     def draw(self):
         self.screen.blit(self.image, (self.position.x, self.position.y-self.position.height))
 
+
+    def cheat(self, Spacekey):
+        if(Spacekey):
+            self.points+= self.point_speed
 
