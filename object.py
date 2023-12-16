@@ -29,13 +29,47 @@ def rotate(surface, angle, pivot, offset):
     rect = rot_img.get_rect(center=pivot + rot_offset)
     return rot_img, rect
 
+def contains(rect, point):
+    """
+    Checks if rect contains a point
+
+        Args:
+            rect(pg.Rect)
+            point(pg.Vector2)
+    """
+    return  (rect.x < point.x < rect.x + rect.width) and (rect.y < point.y < rect.y + rect.height)
+
+def intersects(r1, r2):
+    """
+    Args:
+        r1(pg.Rect):
+        r2(pg.Rect):
+
+    Returns: Whether rectangles 1 and 2 intersect
+    """
+    flag = False
+    if contains(r1, pg.Vector2(r2.x, r2.y)):
+        flag = True
+    elif contains(r1, pg.Vector2(r2.x + r2.width, r2.y)):
+        flag = True
+    elif contains(r1, pg.Vector2(r2.x, r2.y + r2.height)):
+        flag = True
+    elif contains(r1, pg.Vector2(r2.x, r2.y + r2.__contains__())):
+        flag = True
+
 
 class Object:
+    '''
+    Object: anything that should be drawn or can interact with the hero
+    '''
     def __init__(self, screen: pg.Surface, image):
         self.speed = pg.Vector2(0, 0)
         self.image = image
         self.position = self.image.get_rect(center=(WIDTH / 2, HEIGHT / 2))
         self.screen = screen
+
+        # TODO make images an array, add a variable for 'state' of the object, telling which image should be drawn
+        #  we want to have animations later
 
     def draw(self):
         self.screen.blit(self.image, self.position)
@@ -51,13 +85,13 @@ class NPC:
 
         self.pos = pg.Vector2(self.obj.position.x, self.obj.position.y)
 
-        self.turn_speed = 5
+        self.turn_speed = 10
         self.an = 0
         self.delta_an = 0
         self.target_an = 0
         self.waypoints = teacher_waypoints
         self.curr_target = pg.Vector2(self.obj.position.x, self.obj.position.y)
-        self.vel_max = pg.Vector2(3, 3)
+        self.vel_max = pg.Vector2(6, 6)
         self.max_sleepframes = 30
         self.sleepframes = 0
 
@@ -129,12 +163,44 @@ class Teacher:
             rel_angle += 360
         return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
 
-
 class Interactive:
+    '''
+    class of objects that the player is able to interact with
+    i.e. chairs or other students
+    '''
     def __init__(self, object):
+        '''
+
+        Args:
+            object(Object): object that has the interactive property
+        '''
         self.obj = object
-        self.int_box = pg.Rect(0, 0, 0, 0)
-        # TODO
+        self.int_box = object.position
+
+    def interact(self, character, condition):
+        '''
+        interaction with the main character
+        Args:
+            character(Main_character):
+            condition(bool):
+
+        '''
+        if self.int_box.colliderect(character.position):
+            if condition and character.state_change_cooldown == 0:
+                character.state_change_cooldown = 30
+                if not character.sitting:
+                    character.oldpos.x = character.position.x
+                    character.oldpos.y = character.position.y
+                    character.position.x = self.obj.position.x - 15
+                    character.position.y = self.obj.position.y + 25
+                    character.sitting = True
+                else:
+                    character.position.x = character.oldpos.x
+                    character.position.y = character.oldpos.y
+                    character.sitting = False
+            elif character.state_change_cooldown > 0:
+                character.state_change_cooldown -= 1
+
 
 
 class Main_character:
@@ -148,6 +214,11 @@ class Main_character:
         self.screen = screen
         self.points = 0
         self.point_speed = 1
+
+        self.sitting = False
+        self.oldpos = pg.Vector2(0, 0)  # hero's coordinates before he sat down
+        self.state_change_cooldown = 0  # for how many frames the hero can't change states (sit down or stand up)
+
     def meet_Obj(self,objects, Akey,Wkey, Skey, Dkey, leftcrash, rightcrash, topcrash, bottomcrash):
         for obj in objects:
             if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
@@ -173,7 +244,7 @@ class Main_character:
         bottomcrash = 0
         topcrash = 0
 
-        if(not Space):
+        if not Space and not self.sitting:
             if (self.position.left <= 0):
                 leftcrash = True
             if (self.position.right >= WIDTH):
@@ -229,5 +300,4 @@ class Main_character:
 
     def cheat(self, Spacekey):
         if(Spacekey):
-            self.points+= self.point_speed
-
+            self.points += self.point_speed

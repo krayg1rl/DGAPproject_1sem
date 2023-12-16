@@ -48,7 +48,7 @@ objects = []
 physical_objects = []
 visible_objects = []
 
-tables = []
+interactives = []
 
 for i in desks:
     table = Object(screen, desk_image)
@@ -60,6 +60,7 @@ for i in chairs:
     chair = Object(screen, chair_img)
     chair.setPos(i.x, i.y)
     visible_objects.append(chair)
+    interactives.append(Interactive(chair))
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image))
@@ -77,12 +78,12 @@ finished = False
 menu_state = 'main'
 
 hero = Main_character(screen)
-hero.speed.y = 30
-hero.speed.x = 30
+hero.speed.y = 5
+hero.speed.x = 5
 
 # keys_pressed is dictionary with following structure:
 # keys_pressed = {'KeyName': <Pressed or not(boolean)>}
-keys_pressed = {'SPACE': False, 'Akey': False, 'Skey': False, 'Dkey': False, 'Wkey': False}
+keys_pressed = {'SPACE': False, 'Akey': False, 'Skey': False, 'Dkey': False, 'Wkey': False, 'Qkey': False}
 
 
 def handle_events(events):
@@ -106,6 +107,8 @@ def handle_events(events):
                 keys_pressed['Dkey'] = True
             if event.key == pg.K_w:
                 keys_pressed['Wkey'] = True
+            if event.key == pg.K_q:
+                keys_pressed['Qkey'] = True
         elif event.type == pg.KEYUP:
             if event.key == pg.K_SPACE:
                 keys_pressed['SPACE'] = False
@@ -117,9 +120,13 @@ def handle_events(events):
                 keys_pressed['Dkey'] = False
             if event.key == pg.K_w:
                 keys_pressed['Wkey'] = False
+            if event.key == pg.K_q:
+                keys_pressed['Qkey'] = False
+
+    for i in interactives:
+        i.interact(hero, keys_pressed['Qkey'])
 
     hero.cheat(keys_pressed['SPACE'])
-
 
     print(hero.points)
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
