@@ -25,10 +25,21 @@ scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(34
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 
 # load button images
-options_img = pg.image.load("pictures/button_options.png").convert_alpha()
+options_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+quit_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+start_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+pause_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+continue_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+
 
 # initialiasating buttons
-options_button = menu.Button(297, 250, options_img, 1)
+options_button = menu.Button(WIDTH / 2, HEIGHT / 2 + start_game_button_img.get_height() + 10, options_button_img, 1)
+quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + start_game_button_img.get_height() +
+                          options_button_img.get_height() + 20, options_button_img, 1)
+start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2, options_button_img, 1)
+pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() / 2 - 2, pause_game_button_img.get_height() / 2 + 7,
+                                options_button_img, 1)
+continue_game_button = menu.Button(WIDTH / 2, HEIGHT / 2, options_button_img, 1)
 
 clock = pg.time.Clock()
 
@@ -128,6 +139,7 @@ def timer():
     global start_time, time_left
 
     if time_left <= 0:
+        # place to call function which reacts on spotting the hero
         start_time = pg.time.get_ticks()
         time_left = TIME_LIMIT
 
@@ -150,8 +162,6 @@ def timer():
 
 
 while not finished:
-    # TODO
-    # drawing of objects should be here
 
     clock.tick(FPS)
 
@@ -159,6 +169,10 @@ while not finished:
         screen.blit(background, (0, 0))
 
         timer()
+
+        if pause_game_button.draw(screen):
+            menu_state = 'pause'
+            pause_time = pg.time.get_ticks()
 
         hero_point = str(hero.points/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
@@ -168,12 +182,43 @@ while not finished:
             obj.draw()
         hero.draw()
 
+        handle_events(pg.event.get())
+
+    if menu_state == 'pause':
+
+        new_start_time = (pg.time.get_ticks() - pause_time)
+
+        for obj in visible_objects:
+            obj.draw()
+        hero.draw()
+
+        if continue_game_button.draw(screen):
+            menu_state = 'game'
+            start_time += new_start_time
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
+
     if menu_state == 'main':
         screen.blit(menu_background, (0, 0))
 
         if options_button.draw(screen):
-            menu_state = "game"
+            menu_state = 'options'
+        if quit_button.draw(screen):
+            finished = True
+        if start_game_button.draw(screen):
+            menu_state = 'game'
 
-    handle_events(pg.event.get())
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
+
+    if menu_state == 'options':
+        screen.blit(menu_background, (0, 0))
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
 
     pg.display.update()
