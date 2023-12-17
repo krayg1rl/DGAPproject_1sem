@@ -142,12 +142,12 @@ class NPC:
 
 
 class Teacher:
-    def __init__(self, npc, scanner):
+    def __init__(self, npc, scanner, dialog):
         self.npc = npc
         self.scanner = scanner
         self.scanpos = pg.Vector2(50, 20)
         self.sc_visible = Object(scanner.screen, scanner.image)
-
+        self.dialogue = dialog
         self.look_angle = 90
         self.vision_range = 300
 
@@ -162,6 +162,7 @@ class Teacher:
         if rel_angle < 0:
             rel_angle += 360
         return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
+
 
 class Interactive:
     '''
@@ -216,6 +217,7 @@ class Main_character:
         self.screen = screen
         self.points = 0
         self.point_speed = 1
+        self.chance = 0
 
         self.sitting = False
         self.chair=None
@@ -304,3 +306,4 @@ class Main_character:
     def cheat(self, Spacekey):
         if(Spacekey):
             self.points += self.point_speed
+
