@@ -177,6 +177,7 @@ class Interactive:
         self.obj = object
         self.int_box = object.position
 
+
     def interact(self, character, condition):
         '''
         interaction with the main character
@@ -194,6 +195,7 @@ class Interactive:
                     character.position.x = self.obj.position.x - 15
                     character.position.y = self.obj.position.y + 25
                     character.sitting = True
+                    character.chair = self.obj
                 else:
                     character.position.x = character.oldpos.x
                     character.position.y = character.oldpos.y
@@ -216,6 +218,7 @@ class Main_character:
         self.point_speed = 1
 
         self.sitting = False
+        self.chair=None
         self.oldpos = pg.Vector2(0, 0)  # hero's coordinates before he sat down
         self.state_change_cooldown = 0  # for how many frames the hero can't change states (sit down or stand up)
 

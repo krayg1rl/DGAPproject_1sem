@@ -181,6 +181,8 @@ while not finished:
         for obj in visible_objects:
             obj.draw()
         hero.draw()
+        if(hero.sitting):
+            screen.blit(hero.chair.image, hero.chair.position)
 
         handle_events(pg.event.get())
 
