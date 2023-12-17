@@ -16,9 +16,8 @@ TIME_LIMIT = 120  # In seconds
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
-# TODO
-# add image for main menu
 menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (WIDTH, HEIGHT))
+pause_menu_background = pg.transform.scale(pg.image.load("pictures/pause_sreen.jpg"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
@@ -181,10 +180,6 @@ while not finished:
 
         timer()
 
-        if pause_game_button.draw(screen):
-            menu_state = 'pause'
-            pause_time = pg.time.get_ticks()
-
         hero_point = str(hero.points/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
@@ -201,7 +196,13 @@ while not finished:
         if(hero.chance<=1):
             screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
-    if menu_state == 'pause':
+        if pause_game_button.draw(screen):
+            menu_state = 'pause'
+            pause_time = pg.time.get_ticks()
+
+    elif menu_state == 'pause':
+
+        screen.blit(pause_menu_background, (0, 0))
 
         new_start_time = (pg.time.get_ticks() - pause_time)
 
@@ -213,7 +214,7 @@ while not finished:
             if event.type == pg.QUIT:
                 finished = True
 
-    if menu_state == 'main':
+    elif menu_state == 'main':
         screen.blit(menu_background, (0, 0))
 
         if settings_button_text.draw(screen):
@@ -229,7 +230,7 @@ while not finished:
             if event.type == pg.QUIT:
                 finished = True
 
-    if menu_state == 'options':
+    elif menu_state == 'options':
         screen.blit(menu_background, (0, 0))
 
         for event in pg.event.get():
