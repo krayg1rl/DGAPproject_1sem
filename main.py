@@ -18,7 +18,7 @@ screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 # TODO
 # add image for main menu
-menu_background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
+menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
@@ -26,21 +26,29 @@ chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 # load button images
-options_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
+settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
 quit_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
-start_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
-pause_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
-continue_game_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+start_game_button_img = pg.image.load("pictures/start_button.png").convert_alpha()
+pause_game_button_img = pg.image.load("pictures/pause_button.png").convert_alpha()
+continue_game_button_img = pg.image.load("pictures/continue_game_button.png").convert_alpha()
+restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
+return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
+info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
 
 
 # initialiasating buttons
-options_button = menu.Button(WIDTH / 2, HEIGHT / 2 + start_game_button_img.get_height() + 10, options_button_img, 1)
-quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + start_game_button_img.get_height() +
-                          options_button_img.get_height() + 20, options_button_img, 1)
-start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2, options_button_img, 1)
-pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() / 2 - 2, pause_game_button_img.get_height() / 2 + 7,
-                                options_button_img, 1)
-continue_game_button = menu.Button(WIDTH / 2, HEIGHT / 2, options_button_img, 1)
+settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
+settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
+quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 150, quit_button_img, 1)
+start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 80, start_game_button_img, 7.4)
+pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
+                                pause_game_button_img, 3)
+continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
+                                   continue_game_button_img, 3)
+restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
+return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
+info_button = menu.Button(120, 80, info_button_img, 5)
 
 clock = pg.time.Clock()
 
@@ -197,10 +205,6 @@ while not finished:
 
         new_start_time = (pg.time.get_ticks() - pause_time)
 
-        for obj in visible_objects:
-            obj.draw()
-        hero.draw()
-
         if continue_game_button.draw(screen):
             menu_state = 'game'
             start_time += new_start_time
@@ -212,12 +216,14 @@ while not finished:
     if menu_state == 'main':
         screen.blit(menu_background, (0, 0))
 
-        if options_button.draw(screen):
+        if settings_button_text.draw(screen):
             menu_state = 'options'
         if quit_button.draw(screen):
             finished = True
         if start_game_button.draw(screen):
             menu_state = 'game'
+        if info_button.draw(screen):
+            menu_state = 'info'
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
