@@ -142,12 +142,12 @@ class NPC:
 
 
 class Teacher:
-    def __init__(self, npc, scanner):
+    def __init__(self, npc, scanner, dialog):
         self.npc = npc
         self.scanner = scanner
         self.scanpos = pg.Vector2(50, 20)
         self.sc_visible = Object(scanner.screen, scanner.image)
-
+        self.dialogue = dialog
         self.look_angle = 90
         self.vision_range = 300
 
@@ -163,6 +163,7 @@ class Teacher:
             rel_angle += 360
         return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
 
+
 class Interactive:
     '''
     class of objects that the player is able to interact with
@@ -176,6 +177,7 @@ class Interactive:
         '''
         self.obj = object
         self.int_box = object.position
+
 
     def interact(self, character, condition):
         '''
@@ -194,6 +196,7 @@ class Interactive:
                     character.position.x = self.obj.position.x - 15
                     character.position.y = self.obj.position.y + 25
                     character.sitting = True
+                    character.chair = self.obj
                 else:
                     character.position.x = character.oldpos.x
                     character.position.y = character.oldpos.y
@@ -214,8 +217,10 @@ class Main_character:
         self.screen = screen
         self.points = 0
         self.point_speed = 1
+        self.chance = 0
 
         self.sitting = False
+        self.chair=None
         self.oldpos = pg.Vector2(0, 0)  # hero's coordinates before he sat down
         self.state_change_cooldown = 0  # for how many frames the hero can't change states (sit down or stand up)
 
@@ -301,3 +306,4 @@ class Main_character:
     def cheat(self, Spacekey):
         if(Spacekey):
             self.points += self.point_speed
+

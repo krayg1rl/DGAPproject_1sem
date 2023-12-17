@@ -23,7 +23,8 @@ desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
-
+karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
+ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 # load button images
 options_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
 quit_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
@@ -63,7 +64,7 @@ for i in chairs:
     interactives.append(Interactive(chair))
 
 npc = NPC(Object(screen, prep_image))
-karasev = Teacher(npc, Object(screen, scanner_image))
+karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
 
@@ -80,6 +81,7 @@ menu_state = 'main'
 hero = Main_character(screen)
 hero.speed.y = 5
 hero.speed.x = 5
+hero.chance = 3
 
 # keys_pressed is dictionary with following structure:
 # keys_pressed = {'KeyName': <Pressed or not(boolean)>}
@@ -132,7 +134,8 @@ def handle_events(events):
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
 
     karasev.move()
-    karasev.check(hero)
+    if(karasev.check(hero) and keys_pressed['SPACE']):
+        hero.chance = hero.chance-1
 
 
 def timer():
@@ -181,8 +184,14 @@ while not finished:
         for obj in visible_objects:
             obj.draw()
         hero.draw()
+        if(hero.sitting):
+            screen.blit(hero.chair.image, hero.chair.position)
 
         handle_events(pg.event.get())
+        if(hero.chance<=2):
+            screen.blit(karasev_img, (WIDTH/2,HEIGHT/2))
+        if(hero.chance<=1):
+            screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
     if menu_state == 'pause':
 
