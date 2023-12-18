@@ -34,7 +34,19 @@ continue_game_button_img = pg.image.load("pictures/continue_game_button.png").co
 restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
 return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
 info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+a_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+b_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+c_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+d_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+questions=[]
+right_answers=['A']
+after_true_answ=[]
+after_false_answ=[]
+question1 = pg.transform.scale(pg.image.load("pictures/question1.png"), (WIDTH/2, HEIGHT/2))
+question1_rect = question1.get_rect(center =(WIDTH/2, HEIGHT/2))
+questions.append(question1)
 
+after_true_answ.append(question1)
 
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
@@ -48,6 +60,7 @@ continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3
 restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
 return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
 info_button = menu.Button(120, 80, info_button_img, 5)
+a_button = menu.Button(WIDTH/2, HEIGHT/2, a_button_img, 2)
 
 clock = pg.time.Clock()
 
@@ -90,6 +103,7 @@ hero.speed.y = 5
 hero.speed.x = 5
 hero.chance = 3
 
+num_of_q=0
 # keys_pressed is dictionary with following structure:
 # keys_pressed = {'KeyName': <Pressed or not(boolean)>}
 keys_pressed = {'SPACE': False, 'Akey': False, 'Skey': False, 'Dkey': False, 'Wkey': False, 'Qkey': False}
@@ -100,7 +114,7 @@ def handle_events(events):
     function, which is aimed at managing keyboard(or mouse) events and proper responses for them
     '''
 
-    global finished, keys_pressed
+    global finished, keys_pressed, menu_state
 
     for event in events:
         if event.type == pg.QUIT:
@@ -137,12 +151,18 @@ def handle_events(events):
 
     hero.cheat(keys_pressed['SPACE'])
 
-    print(hero.points)
+    # print(hero.points)
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
 
     karasev.move()
     if(karasev.check(hero) and keys_pressed['SPACE']):
         hero.chance = hero.chance-1
+        keys_pressed['SPACE']=0
+        keys_pressed['Akey']=0
+        keys_pressed['Wkey'] = 0
+        keys_pressed['Skey'] = 0
+        keys_pressed['Dkey'] = 0
+        menu_state = 'quiz'
 
 
 def timer():
@@ -236,5 +256,24 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+    elif menu_state == 'quiz':
+        screen.blit(question1, question1_rect)
+        if a_button.draw(screen):
+            menu_state = 'game'
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
+        # screen.blit(questions[num_of_q], (1000, 1000))
+        # if a_button.draw(screen):
+        #     if(right_answers[num_of_q]=='A'):
+        #         # after_true_answ.blit(screen,(0,0))
+
+
+
+
+
+
+
 
     pg.display.update()
