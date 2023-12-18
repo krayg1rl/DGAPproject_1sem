@@ -34,18 +34,19 @@ continue_game_button_img = pg.image.load("pictures/continue_game_button.png").co
 restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
 return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
 info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-a_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-b_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-c_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-d_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
+b_button_img = pg.image.load("pictures/B_img.png").convert_alpha()
+c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
+d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
 questions=[]
-right_answers=['A']
+questions_rect = []
+right_answers=[]
 after_true_answ=[]
 after_false_answ=[]
-question1 = pg.transform.scale(pg.image.load("pictures/question1.png"), (WIDTH/2, HEIGHT/2))
-question1_rect = question1.get_rect(center =(WIDTH/2, HEIGHT/2))
+question1 = pg.transform.scale(pg.image.load("pictures/question1.png"), (WIDTH*0.75, HEIGHT*0.75))
+questions_rect.append(question1.get_rect(center =(WIDTH/2, HEIGHT/2)))
 questions.append(question1)
-
+right_answers.append('B')
 after_true_answ.append(question1)
 
 # initialiasating buttons
@@ -60,8 +61,11 @@ continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3
 restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
 return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
 info_button = menu.Button(120, 80, info_button_img, 5)
-a_button = menu.Button(WIDTH/2, HEIGHT/2, a_button_img, 2)
-
+buttons_height = HEIGHT*0.75
+a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
+b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
+c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
+d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
 clock = pg.time.Clock()
 
 objects = []
@@ -257,10 +261,28 @@ while not finished:
             if event.type == pg.QUIT:
                 finished = True
     elif menu_state == 'quiz':
-        screen.blit(question1, question1_rect)
+        screen.blit(questions[num_of_q], questions_rect[num_of_q])
         if a_button.draw(screen):
-            menu_state = 'game'
+            if(right_answers[num_of_q]=='A'):
+                menu_state = 'game'
+            else:
+                pass
+        if b_button.draw(screen):
+            if (right_answers[num_of_q] == 'B'):
+                menu_state = 'game'
+            else:
+                pass
 
+        if c_button.draw(screen):
+            if (right_answers[num_of_q] == 'C'):
+                menu_state = 'game'
+            else:
+                pass
+        if d_button.draw(screen):
+            if (right_answers[num_of_q] == 'D'):
+                menu_state = 'game'
+            else:
+                pass
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
