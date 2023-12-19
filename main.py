@@ -11,7 +11,7 @@ WIDTH = 1280
 HEIGHT = 720
 FPS = 30
 
-TIME_LIMIT = 120  # In seconds
+TIME_LIMIT = 300  # In seconds
 
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -24,6 +24,8 @@ scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(34
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
+kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
+kiselev_rect=kiselev_img.get_rect(center = (200, 200))
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
 settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
@@ -223,6 +225,13 @@ while not finished:
         if pause_game_button.draw(screen):
             menu_state = 'pause'
             pause_time = pg.time.get_ticks()
+
+        if((time_left)<280) and ((time_left)>260):
+
+
+            screen.blit(kiselev_img, kiselev_rect)
+            pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
+            pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
 
     elif menu_state == 'pause':
 
