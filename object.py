@@ -73,6 +73,9 @@ class Object:
     def draw(self):
         self.screen.blit(self.images[self.anim_state], self.position)
 
+    def add_image(self, image):
+        self.images.append(image)
+
     def get_anim_state(self):
         return self.anim_state
 
@@ -173,7 +176,7 @@ class Student:
         self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 20, self.obj.position.width + 200, self.obj.position.height + 50)
 
         self.intellect = 0.5 + rd.random()*0.8
-        self.cooperation = 0.5 + rd.random()
+        self.cooperation = 0.4 + rd.random()*0.6
 
     def occupy_place(self, places):
         '''
@@ -195,6 +198,12 @@ class Student:
         if self.interactive.int_box.colliderect(character.position):
             character.near_student = True
             character.point_speed = character.base_point_speed * self.intellect * self.cooperation
+            if not character.sitting:
+                self.obj.anim_state = 1
+            else:
+                self.obj.anim_state = 0
+        else:
+            self.obj.anim_state = 0
 
 
 
@@ -211,7 +220,7 @@ class Interactive:
         '''
         self.can_interact = True
         self.obj = object
-        self.int_box = object.position
+        self.int_box = pg.Rect(object.position)
 
     def set_pos(self, pos):
         '''
@@ -231,8 +240,12 @@ class Interactive:
 
         '''
         if self.int_box.colliderect(character.position) and self.can_interact:
+            if not character.sitting:
+                self.obj.anim_state = 1
+            else:
+                self.obj.anim_state = 0
             if condition and character.state_change_cooldown == 0:
-                character.state_change_cooldown = 30
+                character.state_change_cooldown = 15
                 if not character.sitting:
                     character.oldpos.x = character.position.x
                     character.oldpos.y = character.position.y
@@ -247,6 +260,9 @@ class Interactive:
                     character.sitting = False
             elif character.state_change_cooldown > 0:
                 character.state_change_cooldown -= 1
+        else:
+            self.obj.anim_state = 0
+
 
 
 

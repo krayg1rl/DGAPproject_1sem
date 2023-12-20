@@ -22,14 +22,24 @@ desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 
 npc_image = []
+npc_size = (70, 65)
 npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_1_fixed.png"), (80, 60)))
 npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_2_fixed.png"), (80, 60)))
 npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_3_fixed.png"), (80, 60)))
 npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_4_fixed.png"), (80, 60)))
 npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_5_fixed.png"), (80, 60)))
 
+npc_highlited = []
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_1_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_2_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_3_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_4_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_5_triggered.png"), (80, 60)))
+
+
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
+chair_highlight = pg.transform.scale(pg.image.load("pictures/Chair_highlight.png"), size=(50,100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
@@ -100,15 +110,20 @@ for i in chairs:
 num_of_students = 3
 students = []
 for i in range(num_of_students):
-    students.append(Student(Object(screen, npc_image[rd.randint(0, 4)])))
-    #students[i].obj
+    sprite_num = rd.randint(0, 4)
+    students.append(Student(Object(screen, npc_image[sprite_num])))
+    students[i].obj.add_image(npc_highlited[sprite_num])
     students[i].occupy_place(interactives)
     visible_objects.append(students[i].obj)
+
+interactives.clear()
 
 for i in chairs:
     chair = Object(screen, chair_img)
     chair.setPos(i.x, i.y)
+    chair.add_image(chair_highlight)
     visible_objects.append(chair)
+    interactives.append(Interactive(chair))
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
