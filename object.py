@@ -30,6 +30,14 @@ c_button = menu.Button(buttons_width+100, buttons_height, c_button_img, buttons_
 d_button = menu.Button(buttons_width+150, buttons_height, d_button_img, buttons_size)
 ovch_button = menu.Button(WIDTH/2+500, buttons_height-50, ovch_button_img, 0.2)
 
+# Game sounds
+pg.mixer.init()
+cheating_sound = pg.mixer.Sound("sound/delta_alpha.ogg")
+# Set a volume for all sounds
+pg.mixer.Sound.set_volume(cheating_sound, 0.5)
+sounds_playing = {'cheating_sound': False}
+
+
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
 
@@ -382,8 +390,18 @@ class Main_character:
         Args:
             condition(bool): if conditions for cheating are met
         '''
+        global sounds_playing
+
         if(condition):
+            if not sounds_playing['cheating_sound']:
+                cheating_sound.play()
+                sounds_playing['cheating_sound'] = True
+
             self.points += self.point_speed
+        else:
+            sounds_playing['cheating_sound'] = False
+            cheating_sound.stop()
+
 
 class Artifact:
     def __init__(self, objects, art_id):

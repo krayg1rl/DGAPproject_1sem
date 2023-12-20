@@ -5,7 +5,7 @@ the main loop should be here
 from object import *
 import menu
 import pygame as pg
-import random
+import random as rd
 
 WIDTH = 1280
 HEIGHT = 720
@@ -15,10 +15,10 @@ draw_order_changed = False
 
 TIME_LIMIT = 300  # In seconds
 
-DEFAULT_MUSIC_VOLUME = 0.3
+DEFAULT_MUSIC_VOLUME = 0.15
 
 pg.init()
-pg.mixer.init()
+
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (WIDTH, HEIGHT))
@@ -156,19 +156,22 @@ questions.append(question1)
 right_answers.append('B')
 after_true_answ.append(question1)
 
-# Sounds
-SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3', 'game_music3': 'sound/game_music3.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3'}
+# Songs
+SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3',
+         'game_music3': 'sound/game_music3.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3',
+         'kiselev_theme': 'sound/kiselev_theme.mp3'}
 GAME_SONGS = ['game_music1', 'game_music2', 'game_music3']
-game_songs_queue = sorted(GAME_SONGS, key=lambda x: random.random())
+game_songs_queue = sorted(GAME_SONGS, key=lambda x: rd.random())
 game_songs_queue_number = 0
 song_playing = 'none'
 volume = DEFAULT_MUSIC_VOLUME
 pg.mixer.music.set_volume(volume)
-# music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing)
-music_transitioning_running = (False, 0, 'none')
+# music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing, time song will start(from the begining of the song))
+music_transitioning_running = (False, 0, 'none', 0)
 # userevent for reacting on music stopping to play
 STOPPED_PLAYING = pg.USEREVENT + 1
 pg.mixer.music.set_endevent(STOPPED_PLAYING)
+song_pause_time = 0.0
 
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
@@ -265,7 +268,7 @@ def handle_events(events):
     function, which is aimed at managing keyboard(or mouse) events and proper responses for them
     '''
 
-    global finished, keys_pressed, menu_state, game_songs_queue_number, music_transitioning_running
+    global finished, keys_pressed, menu_state, game_songs_queue_number, music_transitioning_running, song_playing
 
     for event in events:
         if event.type == pg.QUIT:
@@ -298,7 +301,8 @@ def handle_events(events):
                 keys_pressed['Qkey'] = False
         elif event.type == STOPPED_PLAYING:
             game_songs_queue_number = (game_songs_queue_number + 1) % len(game_songs_queue)
-            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number])
+            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], 0)
+            song_playing = game_songs_queue[game_songs_queue_number]
 
     for i in interactives:
         i.interact(hero, keys_pressed['Qkey'])
@@ -332,18 +336,18 @@ def restart_game():
     global start_time, game_songs_queue, game_songs_queue_number, song_playing
 
     song_playing = 'none'
-    game_songs_queue = sorted(GAME_SONGS, key=lambda x: random.random())
+    game_songs_queue = sorted(GAME_SONGS, key=lambda x: rd.random())
     game_songs_queue_number = 0
     start_time = pg.time.get_ticks()
     hero.points = 0
     hero.chance=3
 
 
-def play_music(song_name):
+def play_music(song_name, song_start_time=0):
     global song_playing
 
     pg.mixer.music.load(SONGS[song_name])
-    pg.mixer.music.play()
+    pg.mixer.music.play(start=song_start_time)
     song_playing = song_name
 
 
@@ -361,7 +365,7 @@ def music_transition(new_song):
         pg.mixer.music.set_volume(volume)
     elif (volume_change_time <= pg.time.get_ticks() - start_music_transition_time <= volume_change_time +
           transtion_time_required):
-        play_music(new_song)
+        play_music(new_song, song_start_time=music_transitioning_running[3])
     elif (volume_change_time + transtion_time_required <= pg.time.get_ticks() - start_music_transition_time <= 2 *
           (volume_change_time + transtion_time_required)):
         volume += volume_change_value
@@ -408,8 +412,8 @@ while not finished:
 
         timer()
 
-        if song_playing not in GAME_SONGS:
-            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number])
+        if song_playing not in (GAME_SONGS + ['kiselev_theme']):
+            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], 0)
             song_playing = game_songs_queue[game_songs_queue_number]
 
         hero_point = str(float(int(hero.points))/1000.0)
@@ -435,10 +439,20 @@ while not finished:
 
         if((time_left)<280) and ((time_left)>260):
 
-
+            if song_playing != 'kiselev_theme':
+                song_pause_time = pg.mixer.music.get_pos() / 1000
+                music_transitioning_running = (True, pg.time.get_ticks(), 'kiselev_theme', 0)
+                song_playing = 'kiselev_theme'
             screen.blit(kiselev_img, kiselev_rect)
             pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
             pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
+
+        else:
+            if song_playing == 'kiselev_theme':
+                print('kiselev end')
+                music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], song_pause_time)
+                song_playing = game_songs_queue[game_songs_queue_number]
+
 
         if pause_game_button.draw(screen):
             menu_state = 'pause'
@@ -476,7 +490,7 @@ while not finished:
         screen.blit(menu_background, (0, 0))
 
         if song_playing not in ['main_menu_theme']:
-            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
             song_playing = 'main_menu_theme'
 
         if settings_button_text.draw(screen):
@@ -493,20 +507,20 @@ while not finished:
             if event.type == pg.QUIT:
                 finished = True
             if event.type == STOPPED_PLAYING:
-                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
 
     elif menu_state == 'options':
         screen.blit(menu_background, (0, 0))
 
         if song_playing not in ['main_menu_theme']:
-            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
             song_playing = 'main_menu_theme'
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
             if event.type == STOPPED_PLAYING:
-                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
 
     elif menu_state == 'final':
 
