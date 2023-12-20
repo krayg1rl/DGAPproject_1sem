@@ -21,7 +21,12 @@ pause_menu_background = pg.transform.scale(pg.image.load("pictures/pause_sreen.j
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
 
-npc_image = pg.transform.scale(pg.image.load("pictures/NPC_1_fix.png"), (80, 60))
+npc_image = []
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_1_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_2_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_3_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_4_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_5_fixed.png"), (80, 60)))
 
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
@@ -94,7 +99,8 @@ for i in chairs:
 num_of_students = 3
 students = []
 for i in range(num_of_students):
-    students.append(Student(Object(screen, npc_image)))
+    students.append(Student(Object(screen, npc_image[rd.randint(0, 4)])))
+    #students[i].obj
     students[i].occupy_place(interactives)
     visible_objects.append(students[i].obj)
 
@@ -232,7 +238,7 @@ while not finished:
             obj.draw()
         hero.draw()
         if(hero.sitting):
-            screen.blit(hero.chair.image, hero.chair.position)
+            screen.blit(hero.chair.images[0], hero.chair.position)
 
         handle_events(pg.event.get())
         if(hero.chance<=2):

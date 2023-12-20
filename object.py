@@ -64,16 +64,17 @@ class Object:
     '''
     def __init__(self, screen: pg.Surface, image):
         self.speed = pg.Vector2(0, 0)
-        self.image = image
-        self.position = self.image.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        self.images = []
+        self.images.append(image)
+        self.position = self.images[0].get_rect(center=(WIDTH / 2, HEIGHT / 2))
         self.screen = screen
         self.anim_state = 0
 
-        # TODO make images an array, add a variable for 'state' of the object, telling which image should be drawn
-        #  we want to have animations later
-
     def draw(self):
-        self.screen.blit(self.image, self.position)
+        self.screen.blit(self.images[self.anim_state], self.position)
+
+    def get_anim_state(self):
+        return self.anim_state
 
     def setPos(self, x, y):
         self.position.x = x
@@ -147,14 +148,14 @@ class Teacher:
         self.npc = npc
         self.scanner = scanner
         self.scanpos = pg.Vector2(50, 20)
-        self.sc_visible = Object(scanner.screen, scanner.image)
+        self.sc_visible = Object(scanner.screen, scanner.images[0])
         self.dialogue = dialog
         self.look_angle = 90
         self.vision_range = 300
 
     def move(self):
         self.npc.move()
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
+        self.sc_visible.images[0], new_rect = rotate(self.scanner.images[0], self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
         self.sc_visible.position = new_rect
 
     def check(self, student):
