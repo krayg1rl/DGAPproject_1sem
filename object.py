@@ -10,7 +10,7 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
 
 desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
-chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 280 + int(i/6)*200 + rd.random()*15) for i in range(18)]
+chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 240 + int(i/6)*200 + rd.random()*15) for i in range(18)]
 
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
@@ -67,6 +67,7 @@ class Object:
         self.image = image
         self.position = self.image.get_rect(center=(WIDTH / 2, HEIGHT / 2))
         self.screen = screen
+        self.anim_state = 0
 
         # TODO make images an array, add a variable for 'state' of the object, telling which image should be drawn
         #  we want to have animations later
@@ -163,6 +164,38 @@ class Teacher:
             rel_angle += 360
         return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
 
+class Student:
+    def __init__(self, object):
+
+        self.obj = object
+        self.interactive = Interactive(self.obj)
+        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 100, self.obj.position.width + 200, self.obj.position.height + 200)
+
+        self.intellect = 0.5 + rd.random()*0.8
+        self.cooperation = 0.5 + rd.random()
+
+    def occupy_place(self, places):
+        '''
+        Args:
+            places: array of possible "places" where student can sit
+        '''
+        ptr = rd.randint(0, len(places) - 1)
+        if ptr%2 == 0:
+            if (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
+                ptr += 2
+        else:
+            if (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
+                ptr += 2
+
+        places[ptr].can_interact = False
+        self.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
+
+    def check_for_character(self, character):
+        if self.interactive.int_box.colliderect(character.position):
+            character.near_student = True
+            character.point_speed = character.base_point_speed * self.intellect * self.cooperation
+
+
 
 class Interactive:
     '''
@@ -175,9 +208,18 @@ class Interactive:
         Args:
             object(Object): object that has the interactive property
         '''
+        self.can_interact = True
         self.obj = object
         self.int_box = object.position
 
+    def set_pos(self, pos):
+        '''
+        Args:
+            pos: pg.Vector2 - new position
+        '''
+        self.int_box.x += (pos.x - self.obj.position.x)
+        self.int_box.y += (pos.y - self.obj.position.y)
+        self.obj.setPos(pos.x, pos.y)
 
     def interact(self, character, condition):
         '''
@@ -187,7 +229,7 @@ class Interactive:
             condition(bool):
 
         '''
-        if self.int_box.colliderect(character.position):
+        if self.int_box.colliderect(character.position) and self.can_interact:
             if condition and character.state_change_cooldown == 0:
                 character.state_change_cooldown = 30
                 if not character.sitting:
@@ -196,6 +238,7 @@ class Interactive:
                     character.position.x = self.obj.position.x - 15
                     character.position.y = self.obj.position.y + 25
                     character.sitting = True
+                    character.near_student = False
                     character.chair = self.obj
                 else:
                     character.position.x = character.oldpos.x
@@ -216,10 +259,12 @@ class Main_character:
         self.position.height =self.position.height/2
         self.screen = screen
         self.points = 0
-        self.point_speed = 1
+        self.base_point_speed = 2
+        self.point_speed = self.base_point_speed
         self.chance = 0
 
         self.sitting = False
+        self.near_student = False
         self.chair=None
         self.oldpos = pg.Vector2(0, 0)  # hero's coordinates before he sat down
         self.state_change_cooldown = 0  # for how many frames the hero can't change states (sit down or stand up)
@@ -241,8 +286,6 @@ class Main_character:
 
         return leftcrash, rightcrash, bottomcrash, topcrash
 
-
-
     def move(self, objects, Akey, Wkey, Skey, Dkey, Space):
         leftcrash = 0
         rightcrash = 0
@@ -256,7 +299,7 @@ class Main_character:
                 rightcrash = True
             if (self.position.top <= 150):
                 topcrash = True
-            if (self.position.bottom >= HEIGHT):
+            if (self.position.bottom >= HEIGHT + 80):
                 bottomcrash = True
             for obj in objects:
                 if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
@@ -303,7 +346,11 @@ class Main_character:
         self.screen.blit(self.image, (self.position.x, self.position.y-self.position.height))
 
 
-    def cheat(self, Spacekey):
-        if(Spacekey):
+    def cheat(self, condition):
+        '''
+        Args:
+            condition(bool): if conditions for cheating are met
+        '''
+        if(condition):
             self.points += self.point_speed
 
