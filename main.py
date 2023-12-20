@@ -47,6 +47,25 @@ karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"),
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
+"""
+load cards for final game
+"""
+
+koldunov_question = pg.transform.scale(pg.image.load("pictures/Koldunov_question.png"), (WIDTH, HEIGHT))
+koldunov_positive = pg.transform.scale(pg.image.load("pictures/koldunov_positive.png"), (WIDTH, HEIGHT))
+koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative.png"), (WIDTH, HEIGHT))
+
+karasev_question = pg.transform.scale(pg.image.load("pictures/Karasev_question.png"), (WIDTH, HEIGHT))
+karasev_positive = pg.transform.scale(pg.image.load("pictures/Karasev_positive.png"), (WIDTH, HEIGHT))
+karasev_negative = pg.transform.scale(pg.image.load("pictures/Karasev_negative.png"), (WIDTH, HEIGHT))
+
+savatan_question = pg.transform.scale(pg.image.load("pictures/savatan_question.png"), (WIDTH, HEIGHT))
+savatan_positive = pg.transform.scale(pg.image.load("pictures/savatan_positive.png"), (WIDTH, HEIGHT))
+savatan_negative = pg.transform.scale(pg.image.load("pictures/Savatan_negative.png"), (WIDTH, HEIGHT))
+
+ovchinkin_question = pg.transform.scale(pg.image.load("pictures/ovchinkin_question.png"), (WIDTH, HEIGHT))
+ovchinkin_positive = pg.transform.scale(pg.image.load("pictures/ovchinkin_positive.png"), (WIDTH, HEIGHT))
+ovchinkin_negative = pg.transform.scale(pg.image.load("pictures/Ovchinkin_negative.png"), (WIDTH, HEIGHT))
 
 kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
 kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_negative.png"), (WIDTH, HEIGHT))
@@ -66,18 +85,46 @@ negative_reactions =[]
 right_answers = []
 actions =[]
 
-testcards.append(kiselev_question)
-positive_reactions.append(kiselev_positive)
-negative_reactions.append(kiselev_negative)
-actions.append('T')
-right_answers.append('A')
-testcards.append(koldunov_question)
-positive_reactions.append(koldunov_positive)
-negative_reactions.append(koldunov_negative)
-actions.append('T')
-right_answers.append('B')
+maincards_f =[]
+testcards_f= []
+positive_reactions_f=[]
+negative_reactions_f =[]
+right_answers_f = []
+actions_f =[]
 
-cheated1 =Dialog(actions,maincards,testcards, positive_reactions,negative_reactions, right_answers,screen)
+
+testcards_f.append(koldunov_question)
+positive_reactions_f.append(koldunov_positive)
+negative_reactions_f.append(koldunov_negative)
+actions_f.append('T')
+right_answers_f.append('B')
+
+testcards_f.append(karasev_question)
+positive_reactions_f.append(karasev_positive)
+negative_reactions_f.append(karasev_negative)
+actions_f.append('T')
+right_answers_f.append('D')
+
+testcards_f.append(savatan_question)
+positive_reactions_f.append(savatan_positive)
+negative_reactions_f.append(savatan_negative)
+actions_f.append('T')
+right_answers_f.append('C')
+
+testcards_f.append(ovchinkin_question)
+positive_reactions_f.append(ovchinkin_positive)
+negative_reactions_f.append(ovchinkin_negative)
+actions_f.append('T')
+right_answers_f.append('D')
+
+
+testcards_f.append(kiselev_question)
+positive_reactions_f.append(kiselev_positive)
+negative_reactions_f.append(kiselev_negative)
+actions_f.append('T')
+right_answers_f.append('A')
+
+final_dialog =Dialog(actions_f,maincards_f,testcards_f, positive_reactions_f,negative_reactions_f, right_answers_f,screen)
 
 
 
@@ -272,7 +319,7 @@ def handle_events(events):
         keys_pressed['Wkey'] = 0
         keys_pressed['Skey'] = 0
         keys_pressed['Dkey'] = 0
-        menu_state = 'quiz'
+        menu_state = 'final'
 
 
 def restart_game():
@@ -286,6 +333,7 @@ def restart_game():
     game_songs_queue_number = 0
     start_time = pg.time.get_ticks()
     hero.points = 0
+    hero.chance=3
 
 
 def play_music(song_name):
@@ -345,7 +393,6 @@ def timer():
 
     screen.blit(time_passed, (WIDTH / 7.11, HEIGHT / 13.585))
 
-
 while not finished:
 
     clock.tick(FPS)
@@ -374,10 +421,10 @@ while not finished:
         #     screen.blit(hero.chair.images[0], hero.chair.position)
 
         handle_events(pg.event.get())
-        if(hero.chance<=2):
-            screen.blit(karasev_img, (WIDTH/2,HEIGHT/2))
-        if(hero.chance<=1):
-            screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
+        # if(hero.chance<=2):
+        #     screen.blit(karasev_img, (WIDTH/2,HEIGHT/2))
+        # if(hero.chance<=1):
+        #     screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
         if((time_left)<280) and ((time_left)>260):
 
@@ -454,7 +501,7 @@ while not finished:
             if event.type == STOPPED_PLAYING:
                 music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
 
-    elif menu_state == 'quiz':
+    elif menu_state == 'final':
 
         screen.blit(background, (0, 0))
 
@@ -471,7 +518,7 @@ while not finished:
         # if (hero.sitting):
         #    screen.blit(hero.chair.images[0], hero.chair.position)
 
-        contin_quiz = cheated1.talk()
+        contin_quiz = final_dialog.talk()
         if not contin_quiz:
             menu_state = 'game'
         # screen.blit(questions[num_of_q], questions_rect[num_of_q])
