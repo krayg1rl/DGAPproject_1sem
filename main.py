@@ -27,6 +27,11 @@ karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"),
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
+
+kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
 settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
@@ -37,10 +42,11 @@ continue_game_button_img = pg.image.load("pictures/continue_game_button.png").co
 restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
 return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
 info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
-b_button_img = pg.image.load("pictures/B_img.png").convert_alpha()
-c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
-d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
+
+# a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
+# b_button_img = pg.image.load("pictures/B_img.png")
+# c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
+# d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
 questions=[]
 questions_rect = []
 right_answers=[]
@@ -65,10 +71,10 @@ restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
 return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
-a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
-b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
-c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
-d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
+# a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
+# b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
+# c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
+# d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
 clock = pg.time.Clock()
 
 objects = []
@@ -244,7 +250,7 @@ while not finished:
             screen.blit(kiselev_img, kiselev_rect)
             pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
             pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
-
+        #screen.blit(kiselev_question, (0,0))
     elif menu_state == 'pause':
 
         screen.blit(pause_menu_background, (0, 0))

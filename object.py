@@ -1,6 +1,7 @@
 import pygame as pg
 import math
 import random as rd
+import menu
 
 WIDTH = 1280
 HEIGHT = 720
@@ -11,6 +12,18 @@ teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
 desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
 chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 260 + int(i/6)*200 + rd.random()*15) for i in range(18)]
+
+buttons_height = HEIGHT*0.75
+a_button_img = pg.image.load("pictures/A_img.png")
+b_button_img = pg.image.load("pictures/B_img.png")
+c_button_img = pg.image.load("pictures/C_img.png")
+d_button_img = pg.image.load("pictures/D_img.png")
+ovch_button_img=pg.image.load("pictures/ovch_ok.png")
+a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
+b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
+c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
+d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
+ovch_button = menu.Button(WIDTH/2+200, buttons_height, ovch_button_img, 1)
 
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
@@ -353,4 +366,87 @@ class Main_character:
         '''
         if(condition):
             self.points += self.point_speed
+
+class Artefact(Object):
+    pass
+
+class Dialog:
+    def __init__(self, maincards , testcards,positive_reactions, negative_reactions, right_answers, screen, actions):
+        self.number_of_maincard=0
+        self.number_of_action=0
+        self.number_of_test_card=0
+        self.actions = actions
+        self.testcards = testcards
+        self.maincards = maincards
+        self.positive_reactions = positive_reactions
+        self.negative_reactions = negative_reactions
+        self.right_answers = right_answers
+        self.points=0
+        self.screen = screen
+        self.is_answered = False
+        self.answer = False
+
+
+    #Main phrases without variants of answers
+
+    def main_talk(self):
+        self.screen.blit(self.maincards[self.number_of_maincard], (0,0))
+        if(ovch_button.draw(self.screen)):
+            self.number_of_action+=1
+            self.number_of_maincard+=1
+
+    def test_talk(self):
+        if not self.is_answered:
+            self.screen.blit(self.testcards[self.number_of_test_card],(0,0))
+            if a_button.draw(self.screen):
+                self.is_answered=True
+                if (self.right_answers[self.number_of_test_card] == 'A'):
+                    self.answer = True
+            if b_button.draw(self.screen):
+                self.is_answered=True
+                if (self.right_answers[self.number_of_test_card] == 'B'):
+                    self.answer = True
+            if c_button.draw(self.screen):
+                self.is_answered=True
+                if (self.right_answers[self.number_of_test_card] == 'C'):
+                    self.answer = True
+            if d_button.draw(self.screen):
+                self.is_answered=True
+                if (self.right_answers[self.number_of_test_card] == 'D'):
+                    self.answer = True
+        else:
+            if (self.answer):
+                self.screen.blit(self.positive_reactions[self.number_of_test_card], (0,0))
+                if ovch_button.draw(self.screen):
+                    self.number_of_action+=1
+                    self.number_of_test_card+=1
+                    self.is_answered=False
+                    self.answer=False
+            else:
+                self.screen.blit(self.negative_reactions[self.number_of_test_card], (0,0))
+                if ovch_button.draw(self.screen):
+                    self.number_of_action+=1
+                    self.number_of_test_card+=1
+                    self.is_answered=False
+                    self.answer=False
+    def talk(self):
+        if self.number_of_action<len(self.actions):
+            if self.actions[self.number_of_action]=='M':
+                self.main_talk()
+            else:
+                self.test_talk()
+            return True
+        else:
+            return False
+
+
+
+
+
+
+
+
+
+
+
 
