@@ -207,6 +207,8 @@ for i in range(num_of_students):
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
+karasev.npc.obj.draw_order = 5
+karasev.sc_visible.draw_order = 100
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
 
