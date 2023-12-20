@@ -5,6 +5,9 @@ import menu
 
 WIDTH = 1280
 HEIGHT = 720
+
+draw_order_changed = True
+
 teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
                      pg.Vector2(400, 300), pg.Vector2(1000, 300),
                      pg.Vector2(400, 500), pg.Vector2(1000, 500)]
@@ -253,12 +256,17 @@ class Interactive:
                     character.position.x = self.obj.position.x - 15
                     character.position.y = self.obj.position.y + 25
                     character.sitting = True
+                    character.obj.draw_order = 0
+                    character.draw_order_changed = True
+
                     character.near_student = False
                     character.chair = self.obj
                 else:
                     character.position.x = character.oldpos.x
                     character.position.y = character.oldpos.y
                     character.sitting = False
+                    character.obj.draw_order = 2
+                    character.draw_order_changed = True
             elif character.state_change_cooldown > 0:
                 character.state_change_cooldown -= 1
         else:
@@ -270,11 +278,15 @@ class Interactive:
 class Main_character:
 
     def __init__(self, screen: pg.Surface):
-
         self.speed = pg.Vector2(0, 0)
+
         self.image = pg.transform.scale(pg.image.load("pictures/hero.png"), (80, 100))
-        self.position = self.image.get_rect(center = (100, 100))
-        self.position.height =self.position.height/2
+        self.obj = Object(screen, self.image)
+        self.obj.draw_order = 2
+        self.draw_order_changed = False
+
+        self.position = self.image.get_rect(center=(100, 100))
+        self.position.height = self.position.height/2
         self.screen = screen
         self.points = 0
         self.base_point_speed = 2
@@ -357,6 +369,7 @@ class Main_character:
                     pass
                 else:
                     self.position.y += self.speed.y
+        self.obj.position = pg.Rect(self.position.x, self.position.y - self.position.height, self.position.width, self.position.height)
 
 
 

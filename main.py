@@ -11,6 +11,8 @@ WIDTH = 1280
 HEIGHT = 720
 FPS = 30
 
+draw_order_changed = False
+
 TIME_LIMIT = 300  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.3
@@ -233,6 +235,12 @@ karasev.sc_visible.draw_order = 100
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
 
+hero = Main_character(screen)
+visible_objects.append(hero.obj)
+hero.speed.y = 7
+hero.speed.x = 7
+hero.chance = 3
+
 visible_objects.sort(key= lambda x: x.draw_order)
 
 
@@ -246,12 +254,7 @@ time_left = TIME_LIMIT
 finished = False
 menu_state = 'main'
 
-hero = Main_character(screen)
-hero.speed.y = 7
-hero.speed.x = 7
-hero.chance = 3
-
-num_of_q=0
+num_of_q = 0
 # keys_pressed is dictionary with following structure:
 # keys_pressed = {'KeyName': <Pressed or not(boolean)>}
 keys_pressed = {'SPACE': False, 'Akey': False, 'Skey': False, 'Dkey': False, 'Wkey': False, 'Qkey': False}
@@ -413,10 +416,14 @@ while not finished:
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
+        print(hero.draw_order_changed)
+        if hero.draw_order_changed:
+            visible_objects.sort(key=lambda x: x.draw_order)
+            hero.draw_order_changed = False
         for obj in visible_objects:
             if obj.visible:
                 obj.draw()
-        hero.draw()
+        # hero.draw()
         # if(hero.sitting):
         #     screen.blit(hero.chair.images[0], hero.chair.position)
 
@@ -514,7 +521,7 @@ while not finished:
         for obj in visible_objects:
             if obj.visible:
                 obj.draw()
-        hero.draw()
+        # hero.draw()
         # if (hero.sitting):
         #    screen.blit(hero.chair.images[0], hero.chair.position)
 
