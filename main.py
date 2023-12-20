@@ -89,11 +89,6 @@ for i in chairs:
     chair.setPos(i.x, i.y)
     interactives.append(Interactive(chair))
 
-npc = NPC(Object(screen, prep_image))
-karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
-visible_objects.append(npc.obj)
-visible_objects.append(karasev.sc_visible)
-
 test_student = Student(Object(screen, npc_image))
 test_student.occupy_place(interactives)
 visible_objects.append(test_student.obj)
@@ -102,6 +97,12 @@ for i in chairs:
     chair = Object(screen, chair_img)
     chair.setPos(i.x, i.y)
     visible_objects.append(chair)
+
+npc = NPC(Object(screen, prep_image))
+karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
+visible_objects.append(npc.obj)
+visible_objects.append(karasev.sc_visible)
+
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
