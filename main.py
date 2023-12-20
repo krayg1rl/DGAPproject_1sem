@@ -30,7 +30,7 @@ kiselev_rect=kiselev_img.get_rect(center = (200, 200))
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
 settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
-quit_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+quit_button_img = pg.image.load("pictures/quit_button.png").convert_alpha()
 start_game_button_img = pg.image.load("pictures/start_button.png").convert_alpha()
 pause_game_button_img = pg.image.load("pictures/pause_button.png").convert_alpha()
 continue_game_button_img = pg.image.load("pictures/continue_game_button.png").convert_alpha()
@@ -55,14 +55,15 @@ after_true_answ.append(question1)
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
 settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
-quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 150, quit_button_img, 1)
+quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 130, quit_button_img, 6.2)
 start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 80, start_game_button_img, 7.4)
 pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
                                 pause_game_button_img, 3)
-continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
+continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 14,
                                    continue_game_button_img, 3)
-restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
-return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
+return_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
+restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img, 6)
+quit_button_pause = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 93, quit_button_img, 5.5)
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
 a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
@@ -183,11 +184,21 @@ def handle_events(events):
         menu_state = 'quiz'
 
 
+def restart_game():
+    '''
+    function which set all parameters to initial values
+    '''
+    global start_time
+
+    start_time = pg.time.get_ticks()
+    hero.points = 0
+
+
 def timer():
     global start_time, time_left
 
     if time_left <= 0:
-        # place to call function which reacts on spotting the hero
+        # place to call function which reacts on the end of time
         start_time = pg.time.get_ticks()
         time_left = TIME_LIMIT
 
@@ -234,16 +245,17 @@ while not finished:
         if(hero.chance<=1):
             screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
-        if pause_game_button.draw(screen):
-            menu_state = 'pause'
-            pause_time = pg.time.get_ticks()
-
         if((time_left)<280) and ((time_left)>260):
 
 
             screen.blit(kiselev_img, kiselev_rect)
             pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
             pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
+
+        if pause_game_button.draw(screen):
+            menu_state = 'pause'
+            pause_time = pg.time.get_ticks()
+            continue_game_button.clicked = True
 
     elif menu_state == 'pause':
 
@@ -254,6 +266,14 @@ while not finished:
         if continue_game_button.draw(screen):
             menu_state = 'game'
             start_time += new_start_time
+        if return_button.draw(screen):
+            menu_state = 'game'
+            settings_button_text.clicked = True
+        if restart_button.draw(screen):
+            restart_game()
+            menu_state = 'game'
+        if quit_button_pause.draw(screen):
+            menu_state = 'main'
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -281,6 +301,7 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+
     elif menu_state == 'quiz':
         screen.blit(questions[num_of_q], questions_rect[num_of_q])
         if a_button.draw(screen):
