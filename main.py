@@ -349,8 +349,7 @@ def timer():
 
     if time_left <= 0:
         # place to call function which reacts on the end of time
-        start_time = pg.time.get_ticks()
-        time_left = TIME_LIMIT
+        time_left = 0
 
     time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
 
