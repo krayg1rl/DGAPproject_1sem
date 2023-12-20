@@ -99,7 +99,7 @@ SONGS = {'angry_birds': 'sound/angry_birds.mp3', 'main_menu_theme': 'sound/main_
 song_playing = 'none'
 volume = DEFAULT_MUSIC_VOLUME
 pg.mixer.music.set_volume(volume)
-start_music_transition_time = 0
+# music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing)
 music_transitioning_running = (False, 0, 'none')
 
 # initialiasating buttons
