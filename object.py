@@ -169,7 +169,7 @@ class Student:
 
         self.obj = object
         self.interactive = Interactive(self.obj)
-        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 50, self.obj.position.width + 200, self.obj.position.height + 50)
+        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 20, self.obj.position.width + 200, self.obj.position.height + 50)
 
         self.intellect = 0.5 + rd.random()*0.8
         self.cooperation = 0.5 + rd.random()
