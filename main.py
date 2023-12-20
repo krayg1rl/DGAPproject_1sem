@@ -48,6 +48,22 @@ kiselev_rect=kiselev_img.get_rect(center = (200, 200))
 kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
 kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
 kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+maincards =[]
+testcards= []
+positive_reactions=[]
+negative_reactions =[]
+right_answers = []
+actions =[]
+
+testcards.append(kiselev_question)
+positive_reactions.append(kiselev_positive)
+negative_reactions.append(kiselev_negative)
+actions.append('T')
+right_answers.append('A')
+
+cheated1 =Dialog(actions,maincards,testcards, positive_reactions,negative_reactions, right_answers,screen)
+
+
 
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
@@ -336,28 +352,31 @@ while not finished:
                 finished = True
 
     elif menu_state == 'quiz':
-        screen.blit(questions[num_of_q], questions_rect[num_of_q])
-        if a_button.draw(screen):
-            if(right_answers[num_of_q]=='A'):
-                menu_state = 'game'
-            else:
-                pass
-        if b_button.draw(screen):
-            if (right_answers[num_of_q] == 'B'):
-                menu_state = 'game'
-            else:
-                pass
-
-        if c_button.draw(screen):
-            if (right_answers[num_of_q] == 'C'):
-                menu_state = 'game'
-            else:
-                pass
-        if d_button.draw(screen):
-            if (right_answers[num_of_q] == 'D'):
-                menu_state = 'game'
-            else:
-                pass
+        contin_quiz = cheated1.talk()
+        if not contin_quiz:
+            menu_state = 'game'
+        # screen.blit(questions[num_of_q], questions_rect[num_of_q])
+        # if a_button.draw(screen):
+        #     if(right_answers[num_of_q]=='A'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        # if b_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'B'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        #
+        # if c_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'C'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        # if d_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'D'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True

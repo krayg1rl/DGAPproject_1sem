@@ -388,7 +388,7 @@ class Artefact(Object):
     pass
 
 class Dialog:
-    def __init__(self, maincards , testcards,positive_reactions, negative_reactions, right_answers, screen, actions):
+    def __init__(self,actions ,maincards , testcards,positive_reactions, negative_reactions, right_answers, screen):
         self.number_of_maincard=0
         self.number_of_action=0
         self.number_of_test_card=0
