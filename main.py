@@ -104,7 +104,10 @@ for i in desks:
 
 for i in chairs:
     chair = Object(screen, chair_img)
+    chair.draw_order = 1
     chair.setPos(i.x, i.y)
+    chair.add_image(chair_highlight)
+    visible_objects.append(chair)
     interactives.append(Interactive(chair))
 
 num_of_students = 3
@@ -116,19 +119,12 @@ for i in range(num_of_students):
     students[i].occupy_place(interactives)
     visible_objects.append(students[i].obj)
 
-interactives.clear()
-
-for i in chairs:
-    chair = Object(screen, chair_img)
-    chair.setPos(i.x, i.y)
-    chair.add_image(chair_highlight)
-    visible_objects.append(chair)
-    interactives.append(Interactive(chair))
-
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
+
+visible_objects.sort(key= lambda x: x.draw_order)
 
 
 # Font for displaying timer on board
