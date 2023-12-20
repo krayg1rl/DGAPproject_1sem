@@ -13,7 +13,10 @@ FPS = 30
 
 TIME_LIMIT = 300  # In seconds
 
+DEFAULT_MUSIC_VOLUME = 0.3
+
 pg.init()
+pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (WIDTH, HEIGHT))
@@ -44,6 +47,27 @@ karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"),
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
+
+kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+maincards =[]
+testcards= []
+positive_reactions=[]
+negative_reactions =[]
+right_answers = []
+actions =[]
+
+testcards.append(kiselev_question)
+positive_reactions.append(kiselev_positive)
+negative_reactions.append(kiselev_negative)
+actions.append('T')
+right_answers.append('A')
+
+cheated1 =Dialog(actions,maincards,testcards, positive_reactions,negative_reactions, right_answers,screen)
+
+
+
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
 settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
@@ -54,10 +78,11 @@ continue_game_button_img = pg.image.load("pictures/continue_game_button.png").co
 restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
 return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
 info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
-a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
-b_button_img = pg.image.load("pictures/B_img.png").convert_alpha()
-c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
-d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
+
+# a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
+# b_button_img = pg.image.load("pictures/B_img.png")
+# c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
+# d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
 questions=[]
 questions_rect = []
 right_answers=[]
@@ -68,6 +93,14 @@ questions_rect.append(question1.get_rect(center =(WIDTH/2, HEIGHT/2)))
 questions.append(question1)
 right_answers.append('B')
 after_true_answ.append(question1)
+
+# Sounds
+SONGS = {'angry_birds': 'sound/angry_birds.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3'}
+song_playing = 'none'
+volume = DEFAULT_MUSIC_VOLUME
+pg.mixer.music.set_volume(volume)
+# music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing)
+music_transitioning_running = (False, 0, 'none')
 
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
@@ -83,10 +116,10 @@ restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img,
 quit_button_pause = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 93, quit_button_img, 5.5)
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
-a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
-b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
-c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
-d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
+# a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
+# b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
+# c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
+# d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
 clock = pg.time.Clock()
 
 objects = []
@@ -217,6 +250,38 @@ def restart_game():
     hero.points = 0
 
 
+def play_music(song_name):
+    global song_playing
+
+    pg.mixer.music.load(SONGS[song_name])
+    pg.mixer.music.play(-1)
+    song_playing = song_name
+
+
+def music_transition(new_song):
+    global volume
+
+    start_music_transition_time = music_transitioning_running[1]
+
+    volume_change_time = 1500  # in milliseconds
+    volume_change_value = DEFAULT_MUSIC_VOLUME / ((volume_change_time / 1000) * FPS) * 0.9
+    transtion_time_required = 2000 * 1 / FPS
+
+    if pg.time.get_ticks() - start_music_transition_time <= volume_change_time:
+        volume -= volume_change_value
+        pg.mixer.music.set_volume(volume)
+    elif (volume_change_time <= pg.time.get_ticks() - start_music_transition_time <= volume_change_time +
+          transtion_time_required):
+        play_music(new_song)
+    elif (volume_change_time + transtion_time_required <= pg.time.get_ticks() - start_music_transition_time <= 2 *
+          (volume_change_time + transtion_time_required)):
+        volume += volume_change_value
+        pg.mixer.music.set_volume(volume)
+
+    if volume > DEFAULT_MUSIC_VOLUME:
+        volume = DEFAULT_MUSIC_VOLUME
+
+
 def timer():
     global start_time, time_left
 
@@ -247,10 +312,17 @@ while not finished:
 
     clock.tick(FPS)
 
+    if music_transitioning_running[0]:
+        music_transition(music_transitioning_running[2])
+
     if menu_state == 'game':
         screen.blit(background, (0, 0))
 
         timer()
+
+        if song_playing != 'angry_birds':
+            music_transitioning_running = (True, pg.time.get_ticks(), 'angry_birds')
+            song_playing = 'angry_birds'
 
         hero_point = str(float(int(hero.points))/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
@@ -297,6 +369,8 @@ while not finished:
             menu_state = 'game'
         if quit_button_pause.draw(screen):
             menu_state = 'main'
+            settings_button_text.clicked = True
+            quit_button.clicked = True
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -304,6 +378,10 @@ while not finished:
 
     elif menu_state == 'main':
         screen.blit(menu_background, (0, 0))
+
+        if song_playing != 'main_menu_theme':
+            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+            song_playing = 'main_menu_theme'
 
         if settings_button_text.draw(screen):
             menu_state = 'options'
@@ -326,28 +404,31 @@ while not finished:
                 finished = True
 
     elif menu_state == 'quiz':
-        screen.blit(questions[num_of_q], questions_rect[num_of_q])
-        if a_button.draw(screen):
-            if(right_answers[num_of_q]=='A'):
-                menu_state = 'game'
-            else:
-                pass
-        if b_button.draw(screen):
-            if (right_answers[num_of_q] == 'B'):
-                menu_state = 'game'
-            else:
-                pass
-
-        if c_button.draw(screen):
-            if (right_answers[num_of_q] == 'C'):
-                menu_state = 'game'
-            else:
-                pass
-        if d_button.draw(screen):
-            if (right_answers[num_of_q] == 'D'):
-                menu_state = 'game'
-            else:
-                pass
+        contin_quiz = cheated1.talk()
+        if not contin_quiz:
+            menu_state = 'game'
+        # screen.blit(questions[num_of_q], questions_rect[num_of_q])
+        # if a_button.draw(screen):
+        #     if(right_answers[num_of_q]=='A'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        # if b_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'B'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        #
+        # if c_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'C'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
+        # if d_button.draw(screen):
+        #     if (right_answers[num_of_q] == 'D'):
+        #         menu_state = 'game'
+        #     else:
+        #         pass
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
