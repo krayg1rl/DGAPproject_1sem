@@ -13,7 +13,10 @@ FPS = 30
 
 TIME_LIMIT = 300  # In seconds
 
+DEFAULT_MUSIC_VOLUME = 0.3
+
 pg.init()
+pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 background = pg.transform.scale(pg.image.load("pictures/map.png"), (WIDTH, HEIGHT))
 menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (WIDTH, HEIGHT))
@@ -99,6 +102,14 @@ questions.append(question1)
 right_answers.append('B')
 after_true_answ.append(question1)
 
+# Sounds
+SONGS = {'angry_birds': 'sound/angry_birds.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3'}
+song_playing = 'none'
+volume = DEFAULT_MUSIC_VOLUME
+pg.mixer.music.set_volume(volume)
+# music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing)
+music_transitioning_running = (False, 0, 'none')
+
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
 settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
@@ -134,7 +145,10 @@ for i in desks:
 
 for i in chairs:
     chair = Object(screen, chair_img)
+    chair.draw_order = 1
     chair.setPos(i.x, i.y)
+    chair.add_image(chair_highlight)
+    visible_objects.append(chair)
     interactives.append(Interactive(chair))
 
 num_of_students = 3
@@ -146,19 +160,12 @@ for i in range(num_of_students):
     students[i].occupy_place(interactives)
     visible_objects.append(students[i].obj)
 
-interactives.clear()
-
-for i in chairs:
-    chair = Object(screen, chair_img)
-    chair.setPos(i.x, i.y)
-    chair.add_image(chair_highlight)
-    visible_objects.append(chair)
-    interactives.append(Interactive(chair))
-
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
+
+visible_objects.sort(key= lambda x: x.draw_order)
 
 
 # Font for displaying timer on board
@@ -251,6 +258,38 @@ def restart_game():
     hero.points = 0
 
 
+def play_music(song_name):
+    global song_playing
+
+    pg.mixer.music.load(SONGS[song_name])
+    pg.mixer.music.play(-1)
+    song_playing = song_name
+
+
+def music_transition(new_song):
+    global volume
+
+    start_music_transition_time = music_transitioning_running[1]
+
+    volume_change_time = 1500  # in milliseconds
+    volume_change_value = DEFAULT_MUSIC_VOLUME / ((volume_change_time / 1000) * FPS) * 0.9
+    transtion_time_required = 2000 * 1 / FPS
+
+    if pg.time.get_ticks() - start_music_transition_time <= volume_change_time:
+        volume -= volume_change_value
+        pg.mixer.music.set_volume(volume)
+    elif (volume_change_time <= pg.time.get_ticks() - start_music_transition_time <= volume_change_time +
+          transtion_time_required):
+        play_music(new_song)
+    elif (volume_change_time + transtion_time_required <= pg.time.get_ticks() - start_music_transition_time <= 2 *
+          (volume_change_time + transtion_time_required)):
+        volume += volume_change_value
+        pg.mixer.music.set_volume(volume)
+
+    if volume > DEFAULT_MUSIC_VOLUME:
+        volume = DEFAULT_MUSIC_VOLUME
+
+
 def timer():
     global start_time, time_left
 
@@ -281,10 +320,17 @@ while not finished:
 
     clock.tick(FPS)
 
+    if music_transitioning_running[0]:
+        music_transition(music_transitioning_running[2])
+
     if menu_state == 'game':
         screen.blit(background, (0, 0))
 
         timer()
+
+        if song_playing != 'angry_birds':
+            music_transitioning_running = (True, pg.time.get_ticks(), 'angry_birds')
+            song_playing = 'angry_birds'
 
         hero_point = str(float(int(hero.points))/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
@@ -331,6 +377,8 @@ while not finished:
             menu_state = 'game'
         if quit_button_pause.draw(screen):
             menu_state = 'main'
+            settings_button_text.clicked = True
+            quit_button.clicked = True
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -338,6 +386,10 @@ while not finished:
 
     elif menu_state == 'main':
         screen.blit(menu_background, (0, 0))
+
+        if song_playing != 'main_menu_theme':
+            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+            song_playing = 'main_menu_theme'
 
         if settings_button_text.draw(screen):
             menu_state = 'options'

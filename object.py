@@ -84,6 +84,8 @@ class Object:
         self.screen = screen
         self.anim_state = 0
 
+        self.draw_order = 0 # objects with higher draw order are drawn later
+
     def draw(self):
         self.screen.blit(self.images[self.anim_state], self.position)
 
