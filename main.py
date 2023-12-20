@@ -5,7 +5,7 @@ the main loop should be here
 from object import *
 import menu
 import pygame as pg
-import time
+import random
 
 WIDTH = 1280
 HEIGHT = 720
@@ -95,12 +95,18 @@ right_answers.append('B')
 after_true_answ.append(question1)
 
 # Sounds
-SONGS = {'angry_birds': 'sound/angry_birds.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3'}
+SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3', 'game_music3': 'sound/game_music3.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3'}
+GAME_SONGS = ['game_music1', 'game_music2', 'game_music3']
+game_songs_queue = sorted(GAME_SONGS, key=lambda x: random.random())
+game_songs_queue_number = 0
 song_playing = 'none'
 volume = DEFAULT_MUSIC_VOLUME
 pg.mixer.music.set_volume(volume)
 # music_transitioning_running = ('is music transitioning running?', start of music transition time, song which will be playing)
 music_transitioning_running = (False, 0, 'none')
+# userevent for reacting on music stopping to play
+STOPPED_PLAYING = pg.USEREVENT + 1
+pg.mixer.music.set_endevent(STOPPED_PLAYING)
 
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
@@ -114,6 +120,7 @@ continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3
 return_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
 restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img, 6)
 quit_button_pause = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 93, quit_button_img, 5.5)
+return_button_settings = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
@@ -186,7 +193,7 @@ def handle_events(events):
     function, which is aimed at managing keyboard(or mouse) events and proper responses for them
     '''
 
-    global finished, keys_pressed, menu_state
+    global finished, keys_pressed, menu_state, game_songs_queue_number, music_transitioning_running
 
     for event in events:
         if event.type == pg.QUIT:
@@ -217,6 +224,9 @@ def handle_events(events):
                 keys_pressed['Wkey'] = False
             if event.key == pg.K_q:
                 keys_pressed['Qkey'] = False
+        elif event.type == STOPPED_PLAYING:
+            game_songs_queue_number = (game_songs_queue_number + 1) % len(game_songs_queue)
+            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number])
 
     for i in interactives:
         i.interact(hero, keys_pressed['Qkey'])
@@ -244,8 +254,11 @@ def restart_game():
     '''
     function which set all parameters to initial values
     '''
-    global start_time
+    global start_time, game_songs_queue, game_songs_queue_number, song_playing
 
+    song_playing = 'none'
+    game_songs_queue = sorted(GAME_SONGS, key=lambda x: random.random())
+    game_songs_queue_number = 0
     start_time = pg.time.get_ticks()
     hero.points = 0
 
@@ -254,7 +267,7 @@ def play_music(song_name):
     global song_playing
 
     pg.mixer.music.load(SONGS[song_name])
-    pg.mixer.music.play(-1)
+    pg.mixer.music.play()
     song_playing = song_name
 
 
@@ -320,9 +333,9 @@ while not finished:
 
         timer()
 
-        if song_playing != 'angry_birds':
-            music_transitioning_running = (True, pg.time.get_ticks(), 'angry_birds')
-            song_playing = 'angry_birds'
+        if song_playing not in GAME_SONGS:
+            music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number])
+            song_playing = game_songs_queue[game_songs_queue_number]
 
         hero_point = str(float(int(hero.points))/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
@@ -349,6 +362,7 @@ while not finished:
 
         if pause_game_button.draw(screen):
             menu_state = 'pause'
+            pg.mixer.music.pause()
             pause_time = pg.time.get_ticks()
             continue_game_button.clicked = True
 
@@ -360,9 +374,11 @@ while not finished:
 
         if continue_game_button.draw(screen):
             menu_state = 'game'
+            pg.mixer.music.unpause()
             start_time += new_start_time
         if return_button.draw(screen):
             menu_state = 'game'
+            pg.mixer.music.unpause()
             settings_button_text.clicked = True
         if restart_button.draw(screen):
             restart_game()
@@ -379,7 +395,7 @@ while not finished:
     elif menu_state == 'main':
         screen.blit(menu_background, (0, 0))
 
-        if song_playing != 'main_menu_theme':
+        if song_playing not in ['main_menu_theme']:
             music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
             song_playing = 'main_menu_theme'
 
@@ -388,6 +404,7 @@ while not finished:
         if quit_button.draw(screen):
             finished = True
         if start_game_button.draw(screen):
+            restart_game()
             menu_state = 'game'
         if info_button.draw(screen):
             menu_state = 'info'
@@ -395,13 +412,21 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+            if event.type == STOPPED_PLAYING:
+                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
 
     elif menu_state == 'options':
         screen.blit(menu_background, (0, 0))
 
+        if song_playing not in ['main_menu_theme']:
+            music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
+            song_playing = 'main_menu_theme'
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+            if event.type == STOPPED_PLAYING:
+                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme')
 
     elif menu_state == 'quiz':
         contin_quiz = cheated1.talk()
