@@ -77,16 +77,20 @@ class Object:
     '''
     def __init__(self, screen: pg.Surface, image):
         self.speed = pg.Vector2(0, 0)
-        self.image = image
-        self.position = self.image.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        self.images = []
+        self.images.append(image)
+        self.position = self.images[0].get_rect(center=(WIDTH / 2, HEIGHT / 2))
         self.screen = screen
         self.anim_state = 0
 
-        # TODO make images an array, add a variable for 'state' of the object, telling which image should be drawn
-        #  we want to have animations later
-
     def draw(self):
-        self.screen.blit(self.image, self.position)
+        self.screen.blit(self.images[self.anim_state], self.position)
+
+    def add_image(self, image):
+        self.images.append(image)
+
+    def get_anim_state(self):
+        return self.anim_state
 
     def setPos(self, x, y):
         self.position.x = x
@@ -160,14 +164,14 @@ class Teacher:
         self.npc = npc
         self.scanner = scanner
         self.scanpos = pg.Vector2(50, 20)
-        self.sc_visible = Object(scanner.screen, scanner.image)
+        self.sc_visible = Object(scanner.screen, scanner.images[0])
         self.dialogue = dialog
         self.look_angle = 90
         self.vision_range = 300
 
     def move(self):
         self.npc.move()
-        self.sc_visible.image, new_rect = rotate(self.scanner.image, self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
+        self.sc_visible.images[0], new_rect = rotate(self.scanner.images[0], self.npc.an, self.npc.pos + self.scanpos, pg.Vector2(5, 120))
         self.sc_visible.position = new_rect
 
     def check(self, student):
@@ -182,10 +186,10 @@ class Student:
 
         self.obj = object
         self.interactive = Interactive(self.obj)
-        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 100, self.obj.position.width + 200, self.obj.position.height + 200)
+        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 20, self.obj.position.width + 200, self.obj.position.height + 50)
 
         self.intellect = 0.5 + rd.random()*0.8
-        self.cooperation = 0.5 + rd.random()
+        self.cooperation = 0.4 + rd.random()*0.6
 
     def occupy_place(self, places):
         '''
@@ -194,11 +198,11 @@ class Student:
         '''
         ptr = rd.randint(0, len(places) - 1)
         if ptr%2 == 0:
-            if (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
-                ptr += 2
+            while (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
+                ptr = (ptr + 2)%len(places)
         else:
-            if (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
-                ptr += 2
+            while (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
+                ptr = (ptr + 2)%len(places)
 
         places[ptr].can_interact = False
         self.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
@@ -207,6 +211,12 @@ class Student:
         if self.interactive.int_box.colliderect(character.position):
             character.near_student = True
             character.point_speed = character.base_point_speed * self.intellect * self.cooperation
+            if not character.sitting:
+                self.obj.anim_state = 1
+            else:
+                self.obj.anim_state = 0
+        else:
+            self.obj.anim_state = 0
 
 
 
@@ -223,7 +233,7 @@ class Interactive:
         '''
         self.can_interact = True
         self.obj = object
-        self.int_box = object.position
+        self.int_box = pg.Rect(object.position)
 
     def set_pos(self, pos):
         '''
@@ -243,8 +253,12 @@ class Interactive:
 
         '''
         if self.int_box.colliderect(character.position) and self.can_interact:
+            if not character.sitting:
+                self.obj.anim_state = 1
+            else:
+                self.obj.anim_state = 0
             if condition and character.state_change_cooldown == 0:
-                character.state_change_cooldown = 30
+                character.state_change_cooldown = 15
                 if not character.sitting:
                     character.oldpos.x = character.position.x
                     character.oldpos.y = character.position.y
@@ -259,6 +273,9 @@ class Interactive:
                     character.sitting = False
             elif character.state_change_cooldown > 0:
                 character.state_change_cooldown -= 1
+        else:
+            self.obj.anim_state = 0
+
 
 
 

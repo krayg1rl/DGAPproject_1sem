@@ -20,9 +20,26 @@ menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (W
 pause_menu_background = pg.transform.scale(pg.image.load("pictures/pause_sreen.jpg"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
-npc_image = pg.transform.scale(pg.image.load("pictures/NPC_1_fix.png"), (80, 60))
+
+npc_image = []
+npc_size = (70, 65)
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_1_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_2_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_3_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_4_fixed.png"), (80, 60)))
+npc_image.append(pg.transform.scale(pg.image.load("pictures/NPC_5_fixed.png"), (80, 60)))
+
+npc_highlited = []
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_1_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_2_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_3_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_4_triggered.png"), (80, 60)))
+npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_5_triggered.png"), (80, 60)))
+
+
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
+chair_highlight = pg.transform.scale(pg.image.load("pictures/Chair_highlight.png"), size=(50,100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
@@ -35,7 +52,7 @@ kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_question.pn
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
 settings_button_text_img = pg.image.load("pictures/settings_button_text.png").convert_alpha()
-quit_button_img = pg.image.load("pictures/button_options.png").convert_alpha()
+quit_button_img = pg.image.load("pictures/quit_button.png").convert_alpha()
 start_game_button_img = pg.image.load("pictures/start_button.png").convert_alpha()
 pause_game_button_img = pg.image.load("pictures/pause_button.png").convert_alpha()
 continue_game_button_img = pg.image.load("pictures/continue_game_button.png").convert_alpha()
@@ -61,14 +78,15 @@ after_true_answ.append(question1)
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
 settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
-quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 150, quit_button_img, 1)
+quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 130, quit_button_img, 6.2)
 start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 80, start_game_button_img, 7.4)
 pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
                                 pause_game_button_img, 3)
-continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
+continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 14,
                                    continue_game_button_img, 3)
-restart_button = menu.Button(WIDTH / 1.2, HEIGHT / 1.2, restart_button_img, 1)
-return_button = menu.Button(WIDTH / 1.5, HEIGHT / 1.5, return_button_img, 1)
+return_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
+restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img, 6)
+quit_button_pause = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 93, quit_button_img, 5.5)
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
@@ -95,14 +113,23 @@ for i in chairs:
     chair.setPos(i.x, i.y)
     interactives.append(Interactive(chair))
 
-test_student = Student(Object(screen, npc_image))
-test_student.occupy_place(interactives)
-visible_objects.append(test_student.obj)
+num_of_students = 3
+students = []
+for i in range(num_of_students):
+    sprite_num = rd.randint(0, 4)
+    students.append(Student(Object(screen, npc_image[sprite_num])))
+    students[i].obj.add_image(npc_highlited[sprite_num])
+    students[i].occupy_place(interactives)
+    visible_objects.append(students[i].obj)
+
+interactives.clear()
 
 for i in chairs:
     chair = Object(screen, chair_img)
     chair.setPos(i.x, i.y)
+    chair.add_image(chair_highlight)
     visible_objects.append(chair)
+    interactives.append(Interactive(chair))
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
@@ -171,7 +198,8 @@ def handle_events(events):
     for i in interactives:
         i.interact(hero, keys_pressed['Qkey'])
 
-    test_student.check_for_character(hero)
+    for student in students:
+        student.check_for_character(hero)
 
     hero.cheat(keys_pressed['SPACE'] and hero.near_student and hero.sitting)
 
@@ -189,11 +217,21 @@ def handle_events(events):
         menu_state = 'quiz'
 
 
+def restart_game():
+    '''
+    function which set all parameters to initial values
+    '''
+    global start_time
+
+    start_time = pg.time.get_ticks()
+    hero.points = 0
+
+
 def timer():
     global start_time, time_left
 
     if time_left <= 0:
-        # place to call function which reacts on spotting the hero
+        # place to call function which reacts on the end of time
         start_time = pg.time.get_ticks()
         time_left = TIME_LIMIT
 
@@ -232,7 +270,7 @@ while not finished:
             obj.draw()
         hero.draw()
         if(hero.sitting):
-            screen.blit(hero.chair.image, hero.chair.position)
+            screen.blit(hero.chair.images[0], hero.chair.position)
 
         handle_events(pg.event.get())
         if(hero.chance<=2):
@@ -240,17 +278,18 @@ while not finished:
         if(hero.chance<=1):
             screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
-        if pause_game_button.draw(screen):
-            menu_state = 'pause'
-            pause_time = pg.time.get_ticks()
-
         if((time_left)<280) and ((time_left)>260):
 
 
             screen.blit(kiselev_img, kiselev_rect)
             pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
             pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
-        #screen.blit(kiselev_question, (0,0))
+
+        if pause_game_button.draw(screen):
+            menu_state = 'pause'
+            pause_time = pg.time.get_ticks()
+            continue_game_button.clicked = True
+
     elif menu_state == 'pause':
 
         screen.blit(pause_menu_background, (0, 0))
@@ -260,6 +299,14 @@ while not finished:
         if continue_game_button.draw(screen):
             menu_state = 'game'
             start_time += new_start_time
+        if return_button.draw(screen):
+            menu_state = 'game'
+            settings_button_text.clicked = True
+        if restart_button.draw(screen):
+            restart_game()
+            menu_state = 'game'
+        if quit_button_pause.draw(screen):
+            menu_state = 'main'
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -287,6 +334,7 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+
     elif menu_state == 'quiz':
         screen.blit(questions[num_of_q], questions_rect[num_of_q])
         if a_button.draw(screen):
