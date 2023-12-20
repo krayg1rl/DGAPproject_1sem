@@ -53,25 +53,6 @@ def contains(rect, point):
     """
     return  (rect.x < point.x < rect.x + rect.width) and (rect.y < point.y < rect.y + rect.height)
 
-def intersects(r1, r2):
-    """
-    Args:
-        r1(pg.Rect):
-        r2(pg.Rect):
-
-    Returns: Whether rectangles 1 and 2 intersect
-    """
-    flag = False
-    if contains(r1, pg.Vector2(r2.x, r2.y)):
-        flag = True
-    elif contains(r1, pg.Vector2(r2.x + r2.width, r2.y)):
-        flag = True
-    elif contains(r1, pg.Vector2(r2.x, r2.y + r2.height)):
-        flag = True
-    elif contains(r1, pg.Vector2(r2.x, r2.y + r2.__contains__())):
-        flag = True
-
-
 class Object:
     '''
     Object: anything that should be drawn or can interact with the hero
@@ -83,6 +64,7 @@ class Object:
         self.position = self.images[0].get_rect(center=(WIDTH / 2, HEIGHT / 2))
         self.screen = screen
         self.anim_state = 0
+        self.visible = True
 
         self.draw_order = 0 # objects with higher draw order are drawn later
 
@@ -211,7 +193,7 @@ class Student:
         self.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
 
     def check_for_character(self, character):
-        if self.interactive.int_box.colliderect(character.position):
+        if self.interactive.near_character(character):
             character.near_student = True
             character.point_speed = character.base_point_speed * self.intellect * self.cooperation
             if not character.sitting:
@@ -220,7 +202,6 @@ class Student:
                 self.obj.anim_state = 0
         else:
             self.obj.anim_state = 0
-
 
 
 class Interactive:
@@ -247,6 +228,9 @@ class Interactive:
         self.int_box.y += (pos.y - self.obj.position.y)
         self.obj.setPos(pos.x, pos.y)
 
+    def near_character(self, character):
+        return self.int_box.colliderect(character.position)
+
     def interact(self, character, condition):
         '''
         interaction with the main character
@@ -255,7 +239,7 @@ class Interactive:
             condition(bool):
 
         '''
-        if self.int_box.colliderect(character.position) and self.can_interact:
+        if self.near_character(character) and self.can_interact:
             if not character.sitting:
                 self.obj.anim_state = 1
             else:
@@ -387,8 +371,33 @@ class Main_character:
         if(condition):
             self.points += self.point_speed
 
-class Artefact(Object):
-    pass
+class Artifact:
+    def __init__(self, objects, art_id):
+        self.obj = objects[art_id]
+        self.interactive = Interactive(objects[art_id])
+        self.speed_mult = 1
+        self.cheat_mult = 1
+        self.points_add = 0
+        if art_id == 0:
+            self.speed_mult = 1.5
+        elif art_id == 1:
+            self.cheat_mult = 1.5
+        elif art_id == 2:
+            self.points_add = 150
+
+    def change_stats(self, character):
+        character.base_point_speed *= self.speed_mult
+        character.speed *= self.speed_mult
+        character.points += self.points_add
+
+    def check_for_pickup(self, character):
+        if self.interactive.near_character(character):
+            if self.interactive.can_interact:
+                self.change_stats(character)
+                self.interactive.can_interact = False
+                self.obj.visible = False
+
+
 
 class Dialog:
     def __init__(self,actions ,maincards , testcards,positive_reactions, negative_reactions, right_answers, screen):

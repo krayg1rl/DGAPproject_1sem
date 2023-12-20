@@ -54,6 +54,11 @@ kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_positive.pn
 koldunov_question = pg.transform.scale(pg.image.load("pictures/Koldunov_question.png"), (WIDTH, HEIGHT))
 koldunov_positive = pg.transform.scale(pg.image.load("pictures/koldunov_positive.png"), (WIDTH, HEIGHT))
 koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative.png"), (WIDTH, HEIGHT))
+
+item_images = []
+item_images.append(pg.transform.scale(pg.image.load("pictures/item_cola.png"), (18, 46)))
+item_images.append(pg.transform.scale(pg.image.load("pictures/item_paper.png"), (42, 38)))
+
 maincards =[]
 testcards= []
 positive_reactions=[]
@@ -167,6 +172,13 @@ for i in range(num_of_students):
     students[i].occupy_place(interactives)
     visible_objects.append(students[i].obj)
 
+items = []
+item_objects = []
+item_objects.append(Object(screen, item_images[0]))
+items.append(Artifact(item_objects, 0))
+items[0].interactive.set_pos(pg.Vector2(200, 200))
+visible_objects.append(items[0].obj)
+
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 karasev.npc.obj.draw_order = 5
@@ -243,6 +255,9 @@ def handle_events(events):
 
     for student in students:
         student.check_for_character(hero)
+
+    for i in items:
+        i.check_for_pickup(hero)
 
     hero.cheat(keys_pressed['SPACE'] and hero.near_student and hero.sitting)
 
@@ -352,10 +367,11 @@ while not finished:
         screen.blit(points, (1000, 53))
 
         for obj in visible_objects:
-            obj.draw()
+            if obj.visible:
+                obj.draw()
         hero.draw()
-        if(hero.sitting):
-            screen.blit(hero.chair.images[0], hero.chair.position)
+        # if(hero.sitting):
+        #     screen.blit(hero.chair.images[0], hero.chair.position)
 
         handle_events(pg.event.get())
         if(hero.chance<=2):
@@ -449,10 +465,11 @@ while not finished:
         screen.blit(points, (1000, 53))
 
         for obj in visible_objects:
-            obj.draw()
+            if obj.visible:
+                obj.draw()
         hero.draw()
-        if (hero.sitting):
-            screen.blit(hero.chair.images[0], hero.chair.position)
+        # if (hero.sitting):
+        #    screen.blit(hero.chair.images[0], hero.chair.position)
 
         contin_quiz = cheated1.talk()
         if not contin_quiz:
