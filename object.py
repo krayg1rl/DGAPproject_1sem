@@ -13,17 +13,18 @@ desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
 
 chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 260 + int(i/6)*200 + rd.random()*15) for i in range(18)]
 
-buttons_height = HEIGHT*0.75
+buttons_height = HEIGHT*0.75+110
+buttons_size = 0.75
 a_button_img = pg.image.load("pictures/A_img.png")
 b_button_img = pg.image.load("pictures/B_img.png")
 c_button_img = pg.image.load("pictures/C_img.png")
 d_button_img = pg.image.load("pictures/D_img.png")
 ovch_button_img=pg.image.load("pictures/ovch_ok.png")
-a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
-b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
-c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
-d_button = menu.Button(WIDTH/2+200, buttons_height, d_button_img, 1)
-ovch_button = menu.Button(WIDTH/2+200, buttons_height, ovch_button_img, 1)
+a_button = menu.Button(WIDTH/2+100, buttons_height, a_button_img, buttons_size)
+b_button = menu.Button(WIDTH/2+200, buttons_height, b_button_img, buttons_size)
+c_button = menu.Button(WIDTH/2+300, buttons_height, c_button_img, buttons_size)
+d_button = menu.Button(WIDTH/2+400, buttons_height, d_button_img, buttons_size)
+ovch_button = menu.Button(WIDTH/2+500, buttons_height, ovch_button_img, 0.5)
 
 def is_close(a, b, margin):
     return math.fabs(a-b) < margin
