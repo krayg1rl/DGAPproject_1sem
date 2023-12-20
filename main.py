@@ -46,8 +46,11 @@ kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250,
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
 
 kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
-kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
-kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_negative.png"), (WIDTH, HEIGHT))
+kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_positive.png"), (WIDTH, HEIGHT))
+koldunov_question = pg.transform.scale(pg.image.load("pictures/Koldunov_question.png"), (WIDTH, HEIGHT))
+koldunov_positive = pg.transform.scale(pg.image.load("pictures/koldunov_positive.png"), (WIDTH, HEIGHT))
+koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative.png"), (WIDTH, HEIGHT))
 maincards =[]
 testcards= []
 positive_reactions=[]
@@ -60,6 +63,11 @@ positive_reactions.append(kiselev_positive)
 negative_reactions.append(kiselev_negative)
 actions.append('T')
 right_answers.append('A')
+testcards.append(koldunov_question)
+positive_reactions.append(koldunov_positive)
+negative_reactions.append(koldunov_negative)
+actions.append('T')
+right_answers.append('B')
 
 cheated1 =Dialog(actions,maincards,testcards, positive_reactions,negative_reactions, right_answers,screen)
 
@@ -352,6 +360,21 @@ while not finished:
                 finished = True
 
     elif menu_state == 'quiz':
+
+        screen.blit(background, (0, 0))
+
+        timer()
+
+        hero_point = str(float(int(hero.points)) / 1000.0)
+        points = points_font.render(hero_point, True, (255, 255, 255, 255))
+        screen.blit(points, (1000, 53))
+
+        for obj in visible_objects:
+            obj.draw()
+        hero.draw()
+        if (hero.sitting):
+            screen.blit(hero.chair.images[0], hero.chair.position)
+
         contin_quiz = cheated1.talk()
         if not contin_quiz:
             menu_state = 'game'
@@ -392,4 +415,4 @@ while not finished:
 
 
 
-    pg.display.update()
+    pg.display.flip()
