@@ -20,6 +20,7 @@ menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (W
 pause_menu_background = pg.transform.scale(pg.image.load("pictures/pause_sreen.jpg"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
+npc_image = pg.transform.scale(pg.image.load("pictures/NPC_1_fix.png"), (80, 60))
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
@@ -86,13 +87,21 @@ for i in desks:
 for i in chairs:
     chair = Object(screen, chair_img)
     chair.setPos(i.x, i.y)
-    visible_objects.append(chair)
     interactives.append(Interactive(chair))
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
+
+test_student = Student(Object(screen, npc_image))
+test_student.occupy_place(interactives)
+visible_objects.append(test_student.obj)
+
+for i in chairs:
+    chair = Object(screen, chair_img)
+    chair.setPos(i.x, i.y)
+    visible_objects.append(chair)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
@@ -105,8 +114,8 @@ finished = False
 menu_state = 'main'
 
 hero = Main_character(screen)
-hero.speed.y = 5
-hero.speed.x = 5
+hero.speed.y = 7
+hero.speed.x = 7
 hero.chance = 3
 
 num_of_q=0
@@ -155,7 +164,9 @@ def handle_events(events):
     for i in interactives:
         i.interact(hero, keys_pressed['Qkey'])
 
-    hero.cheat(keys_pressed['SPACE'])
+    test_student.check_for_character(hero)
+
+    hero.cheat(keys_pressed['SPACE'] and hero.near_student and hero.sitting)
 
     # print(hero.points)
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
@@ -206,7 +217,7 @@ while not finished:
 
         timer()
 
-        hero_point = str(hero.points/1000.0)
+        hero_point = str(float(int(hero.points))/1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
