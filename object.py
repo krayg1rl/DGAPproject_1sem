@@ -169,7 +169,7 @@ class Student:
 
         self.obj = object
         self.interactive = Interactive(self.obj)
-        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 100, self.obj.position.width + 200, self.obj.position.height + 200)
+        self.interactive.int_box = pg.Rect(self.obj.position.x - 100, self.obj.position.y - 50, self.obj.position.width + 200, self.obj.position.height + 50)
 
         self.intellect = 0.5 + rd.random()*0.8
         self.cooperation = 0.5 + rd.random()
@@ -181,11 +181,11 @@ class Student:
         '''
         ptr = rd.randint(0, len(places) - 1)
         if ptr%2 == 0:
-            if (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
-                ptr += 2
+            while (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
+                ptr = (ptr + 2)%len(places)
         else:
-            if (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
-                ptr += 2
+            while (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
+                ptr = (ptr + 2)%len(places)
 
         places[ptr].can_interact = False
         self.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))

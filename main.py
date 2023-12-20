@@ -20,7 +20,9 @@ menu_background = pg.transform.scale(pg.image.load("pictures/Main_menu.png"), (W
 pause_menu_background = pg.transform.scale(pg.image.load("pictures/pause_sreen.jpg"), (WIDTH, HEIGHT))
 desk_image = pg.transform.scale(pg.image.load("pictures/Desk.png"), (170, 110))
 prep_image = pg.transform.scale(pg.image.load("pictures/prep2.png"), (100, 125))
+
 npc_image = pg.transform.scale(pg.image.load("pictures/NPC_1_fix.png"), (80, 60))
+
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
@@ -89,9 +91,12 @@ for i in chairs:
     chair.setPos(i.x, i.y)
     interactives.append(Interactive(chair))
 
-test_student = Student(Object(screen, npc_image))
-test_student.occupy_place(interactives)
-visible_objects.append(test_student.obj)
+num_of_students = 3
+students = []
+for i in range(num_of_students):
+    students.append(Student(Object(screen, npc_image)))
+    students[i].occupy_place(interactives)
+    visible_objects.append(students[i].obj)
 
 for i in chairs:
     chair = Object(screen, chair_img)
@@ -165,7 +170,8 @@ def handle_events(events):
     for i in interactives:
         i.interact(hero, keys_pressed['Qkey'])
 
-    test_student.check_for_character(hero)
+    for student in students:
+        student.check_for_character(hero)
 
     hero.cheat(keys_pressed['SPACE'] and hero.near_student and hero.sitting)
 
