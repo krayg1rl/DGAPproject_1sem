@@ -21,6 +21,14 @@ class Button:
 
     # draw button on screen
     def draw(self, surface):
+        '''
+        Draws button on screen. If user has clicked the button function returns True
+
+        Args:
+            surface: (pygame.Surface): surface to put button on it
+        Return
+            (boolean) True if button is clicked
+        '''
         action = False
         # get mouse position
         pos = pg.mouse.get_pos()
@@ -79,8 +87,10 @@ class FloatingWindow():
     def draw(self, surface):
         '''
         Function which draws window and buttons on it and returns number of button pressed
-        :param surface:
-        :return (str) number of button pressed starting from 0:
+        Args:
+            surface: (pygame.Surface): surface to put button on it
+        Return
+            (boolean) True if button is clicked
         '''
 
         if ((self.alpha == 255 and self.counter >= 30 * self.transparency_change_time * 1e-3)
