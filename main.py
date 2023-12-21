@@ -177,6 +177,7 @@ info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
 volume_button_img = pg.image.load("pictures/volume_button.png").convert_alpha()
 volume_on_button_img = pg.image.load("pictures/volume_on_button.png").convert_alpha()
 volume_off_button_img = pg.image.load("pictures/volume_off_button.png").convert_alpha()
+ok_button_img = pg.image.load("pictures/ok_button.png").convert_alpha()
 
 # a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
 # b_button_img = pg.image.load("pictures/B_img.png")
@@ -193,6 +194,8 @@ volume_off_button_img = pg.image.load("pictures/volume_off_button.png").convert_
 # right_answers.append('B')
 # after_true_answ.append(question1)
 
+# Load floating windows images
+info_menu_image = pg.image.load("pictures/info_menu.jpg").convert_alpha()
 
 # Songs
 SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3',
@@ -212,7 +215,10 @@ pg.mixer.music.set_endevent(STOPPED_PLAYING)
 song_pause_time = 0.0
 is_game_volume_on = True
 
-# initialiasating buttons
+# Initializing floating windows
+info_floating_window = menu.FloatingWindow(38, 33, info_menu_image, 1, [(WIDTH - 180, HEIGHT - 100, ok_button_img, 5)])
+
+# Initialization buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
 settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
 quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 130, quit_button_img, 6.2)
@@ -228,7 +234,6 @@ return_button_settings = menu.Button(WIDTH / 2, HEIGHT / 2 + 50, return_button_i
 volume_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 50, volume_button_img, 6)
 volume_on_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_on_button_img, 6)
 volume_off_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_off_button_img, 6)
-
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
@@ -718,6 +723,17 @@ while not finished:
             if event.type == pg.QUIT:
                 finished = True
 
+    elif menu_state == 'info':
+        screen.blit(menu_background, (0, 0))
+
+        if info_floating_window.draw(screen) == '0':
+            menu_state = 'main'
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
+            if event.type == STOPPED_PLAYING:
+                music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
 
 
 

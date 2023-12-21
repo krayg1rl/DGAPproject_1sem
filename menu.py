@@ -73,9 +73,21 @@ class FloatingWindow():
         self.counter = 0
         self.transparency_change_time = 500  # in milliseconds
         self.transparency_change_step = 255 // (30 * self.transparency_change_time * 1e-3)
-        self.alpha = 255  # transparency of window and buttons
+        self.alpha = 0  # transparency of window and buttons
+        self.is_transparency_changing_ended = False
 
     def draw(self, surface):
+        '''
+        Function which draws window and buttons on it and returns number of button pressed
+        :param surface:
+        :return (str) number of button pressed starting from 0:
+        '''
+
+        if ((self.alpha == 255 and self.counter >= 30 * self.transparency_change_time * 1e-3)
+                and self.is_transparency_changing_ended):
+            self.counter = 0
+            self.is_transparency_changing_ended = False
+
         for button in self.raw_buttons_information:
             self.buttons.append(Button(button[0], button[1], button[2], button[3]))
 
@@ -83,7 +95,7 @@ class FloatingWindow():
             self.alpha = self.counter * self.transparency_change_step
             self.counter += 1
 
-        if self.counter >= 30:
+        if self.counter >= 30 * self.transparency_change_time * 1e-3:
             self.alpha = 255
 
         self.window_img.set_alpha(self.alpha)
@@ -94,5 +106,6 @@ class FloatingWindow():
 
         for button_number in range(len(self.buttons)):
             if self.buttons[button_number].draw(surface):
+                self.is_transparency_changing_ended = True
                 return str(button_number)
 
