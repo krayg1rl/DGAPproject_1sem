@@ -13,7 +13,7 @@ FPS = 300
 
 draw_order_changed = False
 
-TIME_LIMIT = 5  # In seconds
+TIME_LIMIT = 300  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.15
 DEFAULT_SOUND_VOLUME = 0.5
@@ -42,18 +42,17 @@ npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_3_triggered.
 npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_4_triggered.png"), (80, 60)))
 npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_5_triggered.png"), (80, 60)))
 
-
 scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
-chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50,100))
-chair_highlight = pg.transform.scale(pg.image.load("pictures/Chair_highlight.png"), size=(50,100))
-karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
-ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
-kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
-kiselev_rect=kiselev_img.get_rect(center = (200, 200))
+chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50, 100))
+chair_highlight = pg.transform.scale(pg.image.load("pictures/Chair_highlight.png"), size=(50, 100))
+karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH / 2, HEIGHT / 2))
+ershov_img = pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH / 2, HEIGHT / 2))
+kiselev_img = pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
+kiselev_rect = kiselev_img.get_rect(center=(200, 200))
 
 otchislen_img = pg.transform.scale(pg.image.load("pictures/Otchislen.png"), (WIDTH, HEIGHT))
 peresda_img = pg.transform.scale(pg.image.load("pictures/Peresda.png"), (WIDTH, HEIGHT))
-udos_img =pg.transform.scale(pg.image.load("pictures/Udos.png"), (WIDTH, HEIGHT))
+udos_img = pg.transform.scale(pg.image.load("pictures/Udos.png"), (WIDTH, HEIGHT))
 hor_img = pg.transform.scale(pg.image.load("pictures/Hor.png"), (WIDTH, HEIGHT))
 otl_img = pg.transform.scale(pg.image.load("pictures/Otl.png"), (WIDTH, HEIGHT))
 """
@@ -76,9 +75,9 @@ ovchinkin_question = pg.transform.scale(pg.image.load("pictures/ovchinkin_questi
 ovchinkin_positive = pg.transform.scale(pg.image.load("pictures/ovchinkin_positive.png"), (WIDTH, HEIGHT))
 ovchinkin_negative = pg.transform.scale(pg.image.load("pictures/Ovchinkin_negative.png"), (WIDTH, HEIGHT))
 
-kiselev_question =  pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
+kiselev_question = pg.transform.scale(pg.image.load("pictures/kisilev_question.png"), (WIDTH, HEIGHT))
 kiselev_negative = pg.transform.scale(pg.image.load("pictures/kisilev_negative.png"), (WIDTH, HEIGHT))
-kiselev_positive =pg.transform.scale(pg.image.load("pictures/kisilev_positive.png"), (WIDTH, HEIGHT))
+kiselev_positive = pg.transform.scale(pg.image.load("pictures/kisilev_positive.png"), (WIDTH, HEIGHT))
 koldunov_question = pg.transform.scale(pg.image.load("pictures/Koldunov_question.png"), (WIDTH, HEIGHT))
 koldunov_positive = pg.transform.scale(pg.image.load("pictures/koldunov_positive.png"), (WIDTH, HEIGHT))
 koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative.png"), (WIDTH, HEIGHT))
@@ -88,20 +87,19 @@ item_images.append(pg.transform.scale(pg.image.load("pictures/item_cola.png"), (
 item_images.append(pg.transform.scale(pg.image.load("pictures/item_karasevnik.png"), (36, 30)))
 item_images.append(pg.transform.scale(pg.image.load("pictures/item_paper.png"), (42, 38)))
 
-
-maincards =[]
-testcards= []
-positive_reactions=[]
-negative_reactions =[]
+maincards = []
+testcards = []
+positive_reactions = []
+negative_reactions = []
 right_answers = []
-actions =[]
+actions = []
 
-maincards_f =[]
-testcards_f= []
-positive_reactions_f=[]
-negative_reactions_f =[]
+maincards_f = []
+testcards_f = []
+positive_reactions_f = []
+negative_reactions_f = []
 right_answers_f = []
-actions_f =[]
+actions_f = []
 
 maincards_f.append(time_out)
 actions_f.append('M')
@@ -130,39 +128,39 @@ negative_reactions_f.append(ovchinkin_negative)
 actions_f.append('T')
 right_answers_f.append('C')
 
-
 testcards_f.append(kiselev_question)
 positive_reactions_f.append(kiselev_positive)
 negative_reactions_f.append(kiselev_negative)
 actions_f.append('T')
 right_answers_f.append('A')
 
-final_dialog =Dialog(actions_f,maincards_f,testcards_f, positive_reactions_f,negative_reactions_f, right_answers_f,screen)
+final_dialog = Dialog(actions_f, maincards_f, testcards_f, positive_reactions_f, negative_reactions_f, right_answers_f,
+                      screen)
 
 cheat1_reaction_img = pg.transform.scale(pg.image.load("pictures/Khirianov_spots1.png"), (WIDTH, HEIGHT))
-actions_ch1 =[]
+actions_ch1 = []
 actions_ch1.append('M')
-maincards_ch1=[]
+maincards_ch1 = []
 maincards_ch1.append(cheat1_reaction_img)
 testcards_ch1 = []
-positive_reactions_ch1=[]
-negative_reactions_ch1=[]
-right_answers_ch1=[]
-cheated1 = Dialog(actions_ch1,maincards_ch1,testcards_ch1, positive_reactions_ch1, negative_reactions_ch1,right_answers_ch1,screen)
+positive_reactions_ch1 = []
+negative_reactions_ch1 = []
+right_answers_ch1 = []
+cheated1 = Dialog(actions_ch1, maincards_ch1, testcards_ch1, positive_reactions_ch1, negative_reactions_ch1,
+                  right_answers_ch1, screen)
 
 cheat2_reaction_img = pg.transform.scale(pg.image.load("pictures/Khirianov_spots2.png"), (WIDTH, HEIGHT))
-actions_ch2 =[]
+actions_ch2 = []
 actions_ch2.append('M')
-maincards_ch2=[]
+maincards_ch2 = []
 maincards_ch2.append(cheat2_reaction_img)
 testcards_ch2 = []
-positive_reactions_ch2=[]
-negative_reactions_ch2=[]
-right_answers_ch2=[]
+positive_reactions_ch2 = []
+negative_reactions_ch2 = []
+right_answers_ch2 = []
 
-
-
-cheated2 =Dialog(actions_ch2,maincards_ch2,testcards_ch2, positive_reactions_ch2, negative_reactions_ch2,right_answers_ch2,screen)
+cheated2 = Dialog(actions_ch2, maincards_ch2, testcards_ch2, positive_reactions_ch2, negative_reactions_ch2,
+                  right_answers_ch2, screen)
 
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
@@ -223,9 +221,11 @@ settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
 settings_button_text = menu.Button(WIDTH / 2, HEIGHT / 2 + 30, settings_button_text_img, 6.5)
 quit_button = menu.Button(WIDTH / 2, HEIGHT / 2 + 130, quit_button_img, 6.2)
 start_game_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 80, start_game_button_img, 7.4)
-pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 13,
+pause_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13,
+                                pause_game_button_img.get_height() * 3 / 2 + 13,
                                 pause_game_button_img, 3)
-continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13, pause_game_button_img.get_height() * 3 / 2 + 14,
+continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3 / 2 - 13,
+                                   pause_game_button_img.get_height() * 3 / 2 + 14,
                                    continue_game_button_img, 3)
 return_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
 restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img, 6)
@@ -235,7 +235,7 @@ volume_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 50, volume_button_img, 6)
 volume_on_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_on_button_img, 6)
 volume_off_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_off_button_img, 6)
 info_button = menu.Button(120, 80, info_button_img, 5)
-buttons_height = HEIGHT*0.75
+buttons_height = HEIGHT * 0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
 # b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
 # c_button = menu.Button(WIDTH/2+100, buttons_height, c_button_img, 1)
@@ -269,7 +269,7 @@ for i in range(num_of_students):
     sprite_num = rd.randint(0, 4)
     students.append(Student(Object(screen, npc_image[sprite_num])))
     students[i].obj.add_image(npc_highlited[sprite_num])
-    occupy_place(students[i], interactives)
+    occupy_place(students[i], interactives, True)
     visible_objects.append(students[i].obj)
 
 items = []
@@ -287,8 +287,6 @@ items[2].generate_pos(teacher_waypoints, pg.Vector2(0, 100), pg.Vector2(50, 50))
 for i in items:
     visible_objects.append(i.obj)
 
-
-
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
 karasev.npc.obj.draw_order = 5
@@ -297,17 +295,18 @@ visible_objects.append(npc.obj)
 visible_objects.append(karasev.sc_visible)
 
 hero = Main_character(screen)
+interactives[occupy_place(hero, interactives, False)].interact(hero, True)
+
 visible_objects.append(hero.obj)
 hero.speed.y = 7
 hero.speed.x = 7
 hero.chance = 2
 
-visible_objects.sort(key= lambda x: x.draw_order)
-
+visible_objects.sort(key=lambda x: x.draw_order)
 
 # Font for displaying timer on board
 timer_font = pg.font.SysFont('calibri', 50)
-points_font =pg.font.SysFont('calibri', 50)
+points_font = pg.font.SysFont('calibri', 50)
 
 start_time = pg.time.get_ticks()
 time_left = TIME_LIMIT
@@ -373,29 +372,29 @@ def handle_events(events):
 
     hero.cheat(keys_pressed['SPACE'] and hero.near_student and hero.sitting)
 
-    # print(hero.points)
-    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
+    hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'],
+              keys_pressed['SPACE'])
 
     karasev.move()
-    if(karasev.check(hero)): #and keys_pressed['SPACE']):
-        hero.chance = hero.chance-1
-        keys_pressed['SPACE']=0
-        keys_pressed['Akey']=0
+    if (karasev.check(hero)):  # and keys_pressed['SPACE']):
+        hero.chance = hero.chance - 1
+        keys_pressed['SPACE'] = 0
+        keys_pressed['Akey'] = 0
         keys_pressed['Wkey'] = 0
         keys_pressed['Skey'] = 0
         keys_pressed['Dkey'] = 0
         keys_pressed['Qkey'] = 0
-        k = occupy_place(hero, interactives)
+        k = occupy_place(hero, interactives, False)
         interactives[k].can_interact = True
         hero.oldpos = hero.obj.position
         interactives[k].interact(hero, True)
         hero.sitting = True
         hero.draw_order_changed = True
         hero.obj.draw_order = 0
-        if(hero.chance==1):
+        if (hero.chance == 1):
             menu_state = 'first_time_caught'
             cheating_sound.stop()
-        elif(hero.chance==0):
+        elif (hero.chance == 0):
             menu_state = 'bad_cheat_final'
             cheating_sound.stop()
 
@@ -411,8 +410,7 @@ def restart_game():
     game_songs_queue_number = 0
     start_time = pg.time.get_ticks()
     hero.points = 0
-    hero.chance=2
-
+    hero.chance = 2
 
 
 def play_music(song_name, song_start_time=0):
@@ -454,7 +452,7 @@ def timer():
         # place to call function which reacts on the end of time
         time_left = 0
     else:
-        time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
+        time_left = TIME_LIMIT - ((pg.time.get_ticks() - start_time) / 1000)
 
     time_left_minutes = str(int(int(time_left) // 60))
     time_left_seconds = str(int(int(time_left) % 60))
@@ -467,7 +465,9 @@ def timer():
     if len(time_left_milliseconds) == 1:
         time_left_milliseconds = '0' + time_left_milliseconds
 
-    time_passed = timer_font.render('Timer: ' + time_left_minutes + ':' + time_left_seconds + ':' + time_left_milliseconds, True, (255, 255, 255, 255))
+    time_passed = timer_font.render(
+        'Timer: ' + time_left_minutes + ':' + time_left_seconds + ':' + time_left_milliseconds, True,
+        (255, 255, 255, 255))
 
     screen.blit(time_passed, (WIDTH / 7.11, HEIGHT / 13.585))
 
@@ -488,7 +488,7 @@ while not finished:
             music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], 0)
             song_playing = game_songs_queue[game_songs_queue_number]
 
-        hero_point = str(float(int(hero.points))/1000.0)
+        hero_point = str(float(int(hero.points)) / 1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
@@ -508,21 +508,23 @@ while not finished:
         # if(hero.chance<=1):
         #     screen.blit(ershov_img, (WIDTH/12,HEIGHT/2))
 
-        if((time_left)<280) and ((time_left)>260):
+        if ((time_left) < 280) and ((time_left) > 260):
 
             if song_playing != 'kiselev_theme':
                 song_pause_time = pg.mixer.music.get_pos() / 1000
                 music_transitioning_running = (True, pg.time.get_ticks(), 'kiselev_theme', 0)
                 song_playing = 'kiselev_theme'
             screen.blit(kiselev_img, kiselev_rect)
-            pg.draw.line(screen, (255,0,0), (kiselev_rect.centerx,kiselev_rect.centery-30), ((50*(time_left-260)), HEIGHT), 4)
-            pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery-30), ((50 * (time_left - 260)+40), HEIGHT), 4)
+            pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx, kiselev_rect.centery - 30),
+                         ((50 * (time_left - 260)), HEIGHT), 4)
+            pg.draw.line(screen, (255, 0, 0), (kiselev_rect.centerx + 40, kiselev_rect.centery - 30),
+                         ((50 * (time_left - 260) + 40), HEIGHT), 4)
 
         else:
             if song_playing == 'kiselev_theme':
-                music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], song_pause_time)
+                music_transitioning_running = (
+                True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], song_pause_time)
                 song_playing = game_songs_queue[game_songs_queue_number]
-
 
         if pause_game_button.draw(screen):
             menu_state = 'pause'
@@ -531,7 +533,7 @@ while not finished:
             pause_time = pg.time.get_ticks()
             continue_game_button.clicked = True
 
-        if time_left<=0:
+        if time_left <= 0:
             menu_state = 'final'
             cheating_sound.stop()
 
@@ -645,10 +647,10 @@ while not finished:
 
         contin_quiz = final_dialog.talk()
         if not contin_quiz:
-            score = int(hero.points/1000) +final_dialog.points
-            if(score<3):
-                screen.blit(peresda_img, (0,0))
-            elif(score>=3) and (score<5):
+            score = int(hero.points / 1000) + final_dialog.points
+            if (score < 3):
+                screen.blit(peresda_img, (0, 0))
+            elif (score >= 3) and (score < 5):
                 screen.blit(udos_img, (0, 0))
             elif (score >= 5) and (score < 8):
                 screen.blit(hor_img, (0, 0))
@@ -703,7 +705,7 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
-    elif menu_state=='bad_cheat_final':
+    elif menu_state == 'bad_cheat_final':
         screen.blit(background, (0, 0))
 
         timer()
@@ -718,7 +720,7 @@ while not finished:
 
         contin_quiz = cheated2.talk()
         if not contin_quiz:
-            screen.blit(otchislen_img, (0,0))
+            screen.blit(otchislen_img, (0, 0))
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -735,7 +737,5 @@ while not finished:
                 finished = True
             if event.type == STOPPED_PLAYING:
                 music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
-
-
 
     pg.display.flip()

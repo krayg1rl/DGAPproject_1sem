@@ -219,7 +219,7 @@ class Student:
         else:
             self.obj.anim_state = 0
 
-def occupy_place(character, places):
+def occupy_place(character, places, not_availible):
     '''
     Args:
         places: array of possible "places" where student can sit
@@ -231,8 +231,8 @@ def occupy_place(character, places):
     else:
         while (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
             ptr = (ptr + 2)%len(places)
-
-    places[ptr].can_interact = False
+    if not_availible:
+        places[ptr].can_interact = False
     character.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
     return ptr
 
@@ -352,8 +352,6 @@ class Main_character:
         rightcrash = 0
         bottomcrash = 0
         topcrash = 0
-        print(self.position)
-        print(self.obj.position)
 
         self.obj.position = pg.Rect(self.obj.position.x, self.obj.position.y + self.obj.position.height,
                                     self.obj.position.width, self.obj.position.height)
