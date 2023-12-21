@@ -9,11 +9,11 @@ import random as rd
 
 WIDTH = 1280
 HEIGHT = 720
-FPS = 30
+FPS = 300
 
 draw_order_changed = False
 
-TIME_LIMIT = 300  # In seconds
+TIME_LIMIT = 5  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.15
 DEFAULT_SOUND_VOLUME = 0.5
@@ -52,6 +52,10 @@ kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250,
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
 
 otchislen_img = pg.transform.scale(pg.image.load("pictures/Otchislen.png"), (WIDTH, HEIGHT))
+peresda_img = pg.transform.scale(pg.image.load("pictures/Peresda.png"), (WIDTH, HEIGHT))
+udos_img =pg.transform.scale(pg.image.load("pictures/Udos.png"), (WIDTH, HEIGHT))
+hor_img = pg.transform.scale(pg.image.load("pictures/Hor.png"), (WIDTH, HEIGHT))
+otl_img = pg.transform.scale(pg.image.load("pictures/Otl.png"), (WIDTH, HEIGHT))
 """
 load cards for final game
 """
@@ -636,7 +640,15 @@ while not finished:
 
         contin_quiz = final_dialog.talk()
         if not contin_quiz:
-            screen.blit
+            score = int(hero.points/1000) +final_dialog.points
+            if(score<3):
+                screen.blit(peresda_img, (0,0))
+            elif(score>=3) and (score<5):
+                screen.blit(udos_img, (0, 0))
+            elif (score >= 5) and (score < 8):
+                screen.blit(hor_img, (0, 0))
+            else:
+                screen.blit(otl_img, (0, 0))
         # screen.blit(questions[num_of_q], questions_rect[num_of_q])
         # if a_button.draw(screen):
         #     if(right_answers[num_of_q]=='A'):
