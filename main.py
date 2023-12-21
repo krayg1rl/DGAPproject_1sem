@@ -249,7 +249,7 @@ for i in range(num_of_students):
     sprite_num = rd.randint(0, 4)
     students.append(Student(Object(screen, npc_image[sprite_num])))
     students[i].obj.add_image(npc_highlited[sprite_num])
-    students[i].occupy_place(interactives)
+    occupy_place(students[i], interactives)
     visible_objects.append(students[i].obj)
 
 items = []
@@ -364,6 +364,13 @@ def handle_events(events):
         keys_pressed['Wkey'] = 0
         keys_pressed['Skey'] = 0
         keys_pressed['Dkey'] = 0
+        k = occupy_place(hero, interactives)
+        interactives[k].can_interact = True
+        hero.oldpos = hero.obj.position
+        interactives[k].interact(hero, True)
+        hero.sitting = True
+        hero.draw_order_changed = True
+        hero.obj.draw_order = 0
         if(hero.chance==1):
             menu_state = 'first_time_caught'
         elif(hero.chance==0):
@@ -461,7 +468,6 @@ while not finished:
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
         screen.blit(points, (1000, 53))
 
-        print(hero.draw_order_changed)
         if hero.draw_order_changed:
             visible_objects.sort(key=lambda x: x.draw_order)
             hero.draw_order_changed = False

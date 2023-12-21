@@ -205,6 +205,7 @@ class Student:
         places[ptr].can_interact = False
         self.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
 
+
     def check_for_character(self, character):
         if self.interactive.near_character(character):
             character.near_student = True
@@ -215,6 +216,23 @@ class Student:
                 self.obj.anim_state = 0
         else:
             self.obj.anim_state = 0
+
+def occupy_place(character, places):
+    '''
+    Args:
+        places: array of possible "places" where student can sit
+    '''
+    ptr = rd.randint(0, len(places) - 1)
+    if ptr%2 == 0:
+        while (not places[ptr].can_interact) or (not places[ptr + 1].can_interact): # either of 2 chairs is occupied
+            ptr = (ptr + 2)%len(places)
+    else:
+        while (not places[ptr].can_interact) or (not places[ptr - 1].can_interact):
+            ptr = (ptr + 2)%len(places)
+
+    places[ptr].can_interact = False
+    character.interactive.set_pos(pg.Vector2(places[ptr].obj.position.x - 15, places[ptr].obj.position.y - 25))
+    return ptr
 
 
 class Interactive:
@@ -260,10 +278,10 @@ class Interactive:
             if condition and character.state_change_cooldown == 0:
                 character.state_change_cooldown = 15
                 if not character.sitting:
-                    character.oldpos.x = character.position.x
-                    character.oldpos.y = character.position.y
-                    character.position.x = self.obj.position.x - 15
-                    character.position.y = self.obj.position.y + 25
+                    character.oldpos.x = character.obj.position.x
+                    character.oldpos.y = character.obj.position.y
+                    character.obj.position.x = self.obj.position.x - 15
+                    character.obj.position.y = self.obj.position.y - 25
                     character.sitting = True
                     character.obj.draw_order = 0
                     character.draw_order_changed = True
@@ -271,10 +289,10 @@ class Interactive:
                     character.near_student = False
                     character.chair = self.obj
                 else:
-                    character.position.x = character.oldpos.x
-                    character.position.y = character.oldpos.y
+                    character.obj.position.x = character.oldpos.x
+                    character.obj.position.y = character.oldpos.y
                     character.sitting = False
-                    character.obj.draw_order = 2
+                    character.obj.draw_order = 3
                     character.draw_order_changed = True
             elif character.state_change_cooldown > 0:
                 character.state_change_cooldown -= 1
@@ -292,10 +310,12 @@ class Main_character:
         self.image = pg.transform.scale(pg.image.load("pictures/hero.png"), (80, 100))
         self.obj = Object(screen, self.image)
         self.obj.draw_order = 2
+        self.interactive = Interactive(self.obj)
         self.draw_order_changed = False
 
         self.position = self.image.get_rect(center=(100, 100))
         self.position.height = self.position.height/2
+        self.obj.position = self.position
         self.screen = screen
         self.points = 0
         self.base_point_speed = 2
@@ -310,17 +330,17 @@ class Main_character:
 
     def meet_Obj(self,objects, Akey,Wkey, Skey, Dkey, leftcrash, rightcrash, topcrash, bottomcrash):
         for obj in objects:
-            if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
-                    self.position.left <= obj.position.right) and (self.position.left >= obj.position.centerx)):
+            if ((self.obj.position.top < obj.position.bottom) and (self.obj.position.bottom > obj.position.top) and (
+                    self.obj.position.left <= obj.position.right) and (self.obj.position.left >= obj.position.centerx)):
                 leftcrash = True
-            if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
-                    self.position.right >= obj.position.left) and (self.position.right <= obj.position.centerx)):
+            if ((self.obj.position.top < obj.position.bottom) and (self.obj.position.bottom > obj.position.top) and (
+                    self.obj.position.right >= obj.position.left) and (self.obj.position.right <= obj.position.centerx)):
                 rightcrash = True
-            if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
-                    self.position.top <= obj.position.bottom) and (self.position.top >= obj.position.centery)):
+            if ((self.obj.position.left < obj.position.right) and (self.obj.position.right > obj.position.left) and (
+                    self.obj.position.top <= obj.position.bottom) and (self.obj.position.top >= obj.position.centery)):
                 topcrash = True
-            if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
-                    self.position.bottom >= obj.position.top) and (self.position.bottom <= obj.position.centery)):
+            if ((self.obj.position.left < obj.position.right) and (self.obj.position.right > obj.position.left) and (
+                    self.obj.position.bottom >= obj.position.top) and (self.obj.position.bottom <= obj.position.centery)):
                 bottomcrash = True
 
         return leftcrash, rightcrash, bottomcrash, topcrash
@@ -330,28 +350,33 @@ class Main_character:
         rightcrash = 0
         bottomcrash = 0
         topcrash = 0
+        print(self.position)
+        print(self.obj.position)
+
+        self.obj.position = pg.Rect(self.obj.position.x, self.obj.position.y + self.obj.position.height,
+                                    self.obj.position.width, self.obj.position.height)
 
         if not Space and not self.sitting:
-            if (self.position.left <= 0):
+            if (self.obj.position.left <= 0):
                 leftcrash = True
-            if (self.position.right >= WIDTH):
+            if (self.obj.position.right >= WIDTH):
                 rightcrash = True
-            if (self.position.top <= 150):
+            if (self.obj.position.top <= 150):
                 topcrash = True
-            if (self.position.bottom >= HEIGHT + 90):
+            if (self.obj.position.bottom >= HEIGHT + 90):
                 bottomcrash = True
             for obj in objects:
-                if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
-                        self.position.left <= obj.position.right) and (self.position.left >= obj.position.centerx)):
+                if ((self.obj.position.top < obj.position.bottom) and (self.obj.position.bottom > obj.position.top) and (
+                        self.obj.position.left <= obj.position.right) and (self.obj.position.left >= obj.position.centerx)):
                     leftcrash = True
-                if ((self.position.top < obj.position.bottom) and (self.position.bottom > obj.position.top) and (
-                        self.position.right >= obj.position.left) and (self.position.right <= obj.position.centerx)):
+                if ((self.obj.position.top < obj.position.bottom) and (self.obj.position.bottom > obj.position.top) and (
+                        self.obj.position.right >= obj.position.left) and (self.obj.position.right <= obj.position.centerx)):
                     rightcrash = True
-                if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
-                        self.position.top <= obj.position.bottom) and (self.position.top >= obj.position.centery)):
+                if ((self.obj.position.left < obj.position.right) and (self.obj.position.right > obj.position.left) and (
+                        self.obj.position.top <= obj.position.bottom) and (self.obj.position.top >= obj.position.centery)):
                     topcrash = True
-                if ((self.position.left < obj.position.right) and (self.position.right > obj.position.left) and (
-                        self.position.bottom >= obj.position.top) and (self.position.bottom <= obj.position.centery)):
+                if ((self.obj.position.left < obj.position.right) and (self.obj.position.right > obj.position.left) and (
+                        self.obj.position.bottom >= obj.position.top) and (self.obj.position.bottom <= obj.position.centery)):
                     bottomcrash = True
 
             if (Akey and not Dkey):
@@ -359,31 +384,36 @@ class Main_character:
                     # self.position.x=self.position.x + self.speed.x
                     pass
                 else:
-                    self.position.x -= self.speed.x
+                    self.obj.position.x -= self.speed.x
             elif (Dkey and not Akey):
                 if (rightcrash):
                     # self.position.x = self.position.x -  self.speed.x
                     pass
                 else:
-                    self.position.x += self.speed.x
+                    self.obj.position.x += self.speed.x
             if (Wkey and not Skey):
                 if (topcrash):
                     # self.position.y = self.position.y+self.speed.y
                     pass
                 else:
-                    self.position.y -= self.speed.y
+                    self.obj.position.y -= self.speed.y
             elif (Skey and not Wkey):
                 if (bottomcrash):
                     # self.position.y = self.position.y-self.speed.y
                     pass
                 else:
-                    self.position.y += self.speed.y
-        self.obj.position = pg.Rect(self.position.x, self.position.y - self.position.height, self.position.width, self.position.height)
+                    self.obj.position.y += self.speed.y
+        #self.obj.position = pg.Rect(self.position.x, self.position.y - self.position.height,
+        #                        self.position.width, self.position.height)
+        self.position = self.obj.position
+        self.obj.position = pg.Rect(self.obj.position.x, self.obj.position.y - self.obj.position.height, self.obj.position.width, self.obj.position.height)
+
+
 
 
 
     def draw(self):
-        self.screen.blit(self.image, (self.position.x, self.position.y-self.position.height))
+        self.screen.blit(self.image, (self.position.x, self.position.y - self.position.height))
 
 
     def cheat(self, condition):
