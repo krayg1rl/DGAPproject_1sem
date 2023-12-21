@@ -78,7 +78,9 @@ koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative
 
 item_images = []
 item_images.append(pg.transform.scale(pg.image.load("pictures/item_cola.png"), (18, 46)))
+item_images.append(pg.transform.scale(pg.image.load("pictures/item_karasevnik.png"), (36, 30)))
 item_images.append(pg.transform.scale(pg.image.load("pictures/item_paper.png"), (42, 38)))
+
 
 maincards =[]
 testcards= []
@@ -209,7 +211,7 @@ for i in desks:
 
 for i in chairs:
     chair = Object(screen, chair_img)
-    chair.draw_order = 1
+    chair.draw_order = 2
     chair.setPos(i.x, i.y)
     chair.add_image(chair_highlight)
     visible_objects.append(chair)
@@ -226,10 +228,20 @@ for i in range(num_of_students):
 
 items = []
 item_objects = []
-item_objects.append(Object(screen, item_images[0]))
+
+for i in item_images:
+    item_objects.append(Object(screen, i))
 items.append(Artifact(item_objects, 0))
-items[0].interactive.set_pos(pg.Vector2(200, 200))
-visible_objects.append(items[0].obj)
+items[0].generate_pos(desks, pg.Vector2(50, -30), pg.Vector2(50, 0))
+items.append(Artifact(item_objects, 2))
+items[1].generate_pos(chairs, pg.Vector2(0, 20), pg.Vector2(0, 0))
+items.append(Artifact(item_objects, 1))
+items[2].generate_pos(teacher_waypoints, pg.Vector2(0, 100), pg.Vector2(50, 50))
+
+for i in items:
+    visible_objects.append(i.obj)
+
+
 
 npc = NPC(Object(screen, prep_image))
 karasev = Teacher(npc, Object(screen, scanner_image), karasev_img)
@@ -319,7 +331,7 @@ def handle_events(events):
     hero.move(physical_objects, keys_pressed['Akey'], keys_pressed['Wkey'], keys_pressed['Skey'], keys_pressed['Dkey'], keys_pressed['SPACE'])
 
     karasev.move()
-    if(karasev.check(hero) and keys_pressed['SPACE']):
+    if(karasev.check(hero)): #and keys_pressed['SPACE']):
         hero.chance = hero.chance-1
         keys_pressed['SPACE']=0
         keys_pressed['Akey']=0
