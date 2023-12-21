@@ -30,11 +30,13 @@ c_button = menu.Button(buttons_width+100, buttons_height, c_button_img, buttons_
 d_button = menu.Button(buttons_width+150, buttons_height, d_button_img, buttons_size)
 ovch_button = menu.Button(WIDTH/2+500, buttons_height-50, ovch_button_img, 0.2)
 
+
 # Game sounds
+DEFAULT_SOUND_VOLUME = 0.5
 pg.mixer.init()
 cheating_sound = pg.mixer.Sound("sound/delta_alpha.ogg")
 # Set a volume for all sounds
-pg.mixer.Sound.set_volume(cheating_sound, 0.5)
+pg.mixer.Sound.set_volume(cheating_sound, 1 * DEFAULT_SOUND_VOLUME)
 sounds_playing = {'cheating_sound': False}
 
 
