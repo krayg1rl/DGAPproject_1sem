@@ -373,6 +373,7 @@ def handle_events(events):
         keys_pressed['Wkey'] = 0
         keys_pressed['Skey'] = 0
         keys_pressed['Dkey'] = 0
+        keys_pressed['Qkey'] = 0
         k = occupy_place(hero, interactives)
         interactives[k].can_interact = True
         hero.oldpos = hero.obj.position
