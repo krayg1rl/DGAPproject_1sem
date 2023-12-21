@@ -8,13 +8,18 @@ HEIGHT = 720
 
 draw_order_changed = True
 
-teacher_waypoints = [pg.Vector2(400, 100), pg.Vector2(1000, 100),
-                     pg.Vector2(400, 300), pg.Vector2(1000, 300),
-                     pg.Vector2(400, 500), pg.Vector2(1000, 500)]
+teacher_waypoints = [pg.Vector2(400, 75), pg.Vector2(1000, 75),
+                     pg.Vector2(400, 260), pg.Vector2(1000, 260),
+                     pg.Vector2(400, 445), pg.Vector2(1000, 445),
+                     pg.Vector2(400, 630), pg.Vector2(1000, 630),
+                     pg.Vector2(80, 75), pg.Vector2(700, 75),
+                     pg.Vector2(80, 260), pg.Vector2(700, 260),
+                     pg.Vector2(80, 445), pg.Vector2(700, 445),
+                     pg.Vector2(80, 630), pg.Vector2(700, 630)]
 
-desks = [pg.Vector2(200 + i%3*300, 240 + int(i/3)*200) for i in range(9)]
+desks = [pg.Vector2(200 + i%3*300, 210 + int(i/3)*185) for i in range(9)]
 
-chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 260 + int(i/6)*200 + rd.random()*15) for i in range(18)]
+chairs = [pg.Vector2(215 + i%2*80 + int(i/2)%3*300 + rd.random()*10, 230 + int(i/6)*185 + rd.random()*15) for i in range(18)]
 
 buttons_height = HEIGHT*0.75+110
 buttons_size = 0.5
@@ -102,14 +107,14 @@ class NPC:
 
         self.pos = pg.Vector2(self.obj.position.x, self.obj.position.y)
 
-        self.turn_speed = 10
+        self.turn_speed = 15
         self.an = 0
         self.delta_an = 0
         self.target_an = 0
         self.waypoints = teacher_waypoints
         self.curr_target = pg.Vector2(self.obj.position.x, self.obj.position.y)
-        self.vel_max = pg.Vector2(6, 6)
-        self.max_sleepframes = 30
+        self.vel_max = pg.Vector2(8, 8)
+        self.max_sleepframes = 23
         self.sleepframes = 0
 
         self.state = 0  # 0=sleeping, 1=moving, 2=turning, 3=looking around
@@ -162,11 +167,11 @@ class Teacher:
     def __init__(self, npc, scanner, dialog):
         self.npc = npc
         self.scanner = scanner
-        self.scanpos = pg.Vector2(50, 20)
+        self.scanpos = pg.Vector2(50, 15)
         self.sc_visible = Object(scanner.screen, scanner.images[0])
         self.dialogue = dialog
         self.look_angle = 90
-        self.vision_range = 300
+        self.vision_range = 330
 
     def move(self):
         self.npc.move()
@@ -443,7 +448,7 @@ class Artifact:
         self.cheat_mult = 1
         self.points_add = 0
         if art_id == 0:
-            self.speed_mult = 1.5
+            self.speed_mult = 1.3
         elif art_id == 1:
             self.cheat_mult = 1.5
         elif art_id == 2:

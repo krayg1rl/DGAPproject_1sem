@@ -9,7 +9,7 @@ import random as rd
 
 WIDTH = 1280
 HEIGHT = 720
-FPS = 300
+FPS = 30
 
 draw_order_changed = False
 
@@ -42,7 +42,7 @@ npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_3_triggered.
 npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_4_triggered.png"), (80, 60)))
 npc_highlited.append(pg.transform.scale(pg.image.load("pictures/NPC_5_triggered.png"), (80, 60)))
 
-scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(340, 250))
+scanner_image = pg.transform.scale(pg.image.load("pictures/radar.png"), size=(424, 300))
 chair_img = pg.transform.scale(pg.image.load("pictures/Chair.png"), size=(50, 100))
 chair_highlight = pg.transform.scale(pg.image.load("pictures/Chair_highlight.png"), size=(50, 100))
 karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"), (WIDTH / 2, HEIGHT / 2))
@@ -198,7 +198,7 @@ info_menu_image = pg.image.load("pictures/info_menu.jpg").convert_alpha()
 # Songs
 SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3',
          'game_music3': 'sound/game_music3.mp3', 'main_menu_theme': 'sound/main_menu_theme.mp3',
-         'kiselev_theme': 'sound/kiselev_theme.mp3'}
+         'kiselev_theme': 'sound/kiselev_theme.mp3', 'final_song': 'sound/final_song.mp3'}
 GAME_SONGS = ['game_music1', 'game_music2', 'game_music3']
 game_songs_queue = sorted(GAME_SONGS, key=lambda x: rd.random())
 game_songs_queue_number = 0
@@ -235,6 +235,8 @@ volume_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 50, volume_button_img, 6)
 volume_on_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_on_button_img, 6)
 volume_off_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_off_button_img, 6)
 info_button = menu.Button(120, 80, info_button_img, 5)
+quit_button_cheat = menu.Button(WIDTH / 2, HEIGHT / 2 + 93, quit_button_img, 5.5)
+restart_button_cheat = menu.Button(WIDTH / 2, HEIGHT / 2 + 3, restart_button_img, 6)
 buttons_height = HEIGHT * 0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
 # b_button = menu.Button(WIDTH/2, buttons_height, b_button_img, 1)
@@ -490,7 +492,7 @@ while not finished:
 
         hero_point = str(float(int(hero.points)) / 1000.0)
         points = points_font.render(hero_point, True, (255, 255, 255, 255))
-        screen.blit(points, (1000, 53))
+        screen.blit(points, (970, 53))
 
         if hero.draw_order_changed:
             visible_objects.sort(key=lambda x: x.draw_order)
@@ -532,9 +534,11 @@ while not finished:
             cheating_sound.stop()
             pause_time = pg.time.get_ticks()
             continue_game_button.clicked = True
+            music_transitioning_running = (True, pg.time.get_ticks(), 'final_song', 0)
 
         if time_left <= 0:
             menu_state = 'final'
+            music_transitioning_running = (True, pg.time.get_ticks(), 'final_song', 0)
             cheating_sound.stop()
 
     elif menu_state == 'pause':
@@ -681,6 +685,8 @@ while not finished:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
+            if event.type == STOPPED_PLAYING:
+                music_transitioning_running = (True, pg.time.get_ticks(), 'final_song', 0)
         # screen.blit(questions[num_of_q], (1000, 1000))
         # if a_button.draw(screen):
         #     if(right_answers[num_of_q]=='A'):
@@ -721,6 +727,14 @@ while not finished:
         contin_quiz = cheated2.talk()
         if not contin_quiz:
             screen.blit(otchislen_img, (0, 0))
+            if restart_button_cheat.draw(screen):
+                restart_game()
+                menu_state = 'game'
+            if quit_button_cheat.draw(screen):
+                restart_game()
+                menu_state = 'main'
+                settings_button_text.clicked = True
+                quit_button.clicked = True
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
