@@ -459,7 +459,7 @@ class Dialog:
 
     def main_talk(self):
         self.screen.blit(self.maincards[self.number_of_maincard], (0,0))
-        if(ovch_button.draw(self.screen)):
+        if ovch_button.draw(self.screen):
             self.number_of_action+=1
             self.number_of_maincard+=1
 

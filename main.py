@@ -49,6 +49,8 @@ karasev_img = pg.transform.scale(pg.image.load("pictures/Karasev_dialogue.PNG"),
 ershov_img=pg.transform.scale(pg.image.load("pictures/Ershov_dialogue.PNG"), (WIDTH/2, HEIGHT/2))
 kiselev_img=pg.transform.scale(pg.image.load("pictures/Kiselev.png"), size=(250, 250))
 kiselev_rect=kiselev_img.get_rect(center = (200, 200))
+
+otchislen_img = pg.transform.scale(pg.image.load("pictures/Otchislen.png"), (WIDTH, HEIGHT))
 """
 load cards for final game
 """
@@ -130,7 +132,30 @@ right_answers_f.append('A')
 
 final_dialog =Dialog(actions_f,maincards_f,testcards_f, positive_reactions_f,negative_reactions_f, right_answers_f,screen)
 
+cheat1_reaction_img = pg.transform.scale(pg.image.load("pictures/Khirianov_spots1.png"), (WIDTH, HEIGHT))
+actions_ch1 =[]
+actions_ch1.append('M')
+maincards_ch1=[]
+maincards_ch1.append(cheat1_reaction_img)
+testcards_ch1 = []
+positive_reactions_ch1=[]
+negative_reactions_ch1=[]
+right_answers_ch1=[]
+cheated1 = Dialog(actions_ch1,maincards_ch1,testcards_ch1, positive_reactions_ch1, negative_reactions_ch1,right_answers_ch1,screen)
 
+cheat2_reaction_img = pg.transform.scale(pg.image.load("pictures/Khirianov_spots2.png"), (WIDTH, HEIGHT))
+actions_ch2 =[]
+actions_ch2.append('M')
+maincards_ch2=[]
+maincards_ch2.append(cheat2_reaction_img)
+testcards_ch2 = []
+positive_reactions_ch2=[]
+negative_reactions_ch2=[]
+right_answers_ch2=[]
+
+
+
+cheated2 =Dialog(actions_ch2,maincards_ch2,testcards_ch2, positive_reactions_ch2, negative_reactions_ch2,right_answers_ch2,screen)
 
 # load button images
 settings_button_img = pg.image.load("pictures/settings_button.png").convert_alpha()
@@ -147,16 +172,17 @@ info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
 # b_button_img = pg.image.load("pictures/B_img.png")
 # c_button_img = pg.image.load("pictures/C_img.png").convert_alpha()
 # d_button_img = pg.image.load("pictures/D_img.png").convert_alpha()
-questions=[]
-questions_rect = []
-right_answers=[]
-after_true_answ=[]
-after_false_answ=[]
-question1 = pg.transform.scale(pg.image.load("pictures/question1.png"), (WIDTH*0.75, HEIGHT*0.75))
-questions_rect.append(question1.get_rect(center =(WIDTH/2, HEIGHT/2)))
-questions.append(question1)
-right_answers.append('B')
-after_true_answ.append(question1)
+# questions=[]
+# questions_rect = []
+# right_answers=[]
+# after_true_answ=[]
+# after_false_answ=[]
+# question1 = pg.transform.scale(pg.image.load("pictures/question1.png"), (WIDTH*0.75, HEIGHT*0.75))
+# questions_rect.append(question1.get_rect(center =(WIDTH/2, HEIGHT/2)))
+# questions.append(question1)
+# right_answers.append('B')
+# after_true_answ.append(question1)
+
 
 # Songs
 SONGS = {'game_music1': 'sound/game_music1.mp3', 'game_music2': 'sound/game_music2.mp3',
@@ -254,7 +280,7 @@ hero = Main_character(screen)
 visible_objects.append(hero.obj)
 hero.speed.y = 7
 hero.speed.x = 7
-hero.chance = 3
+hero.chance = 2
 
 visible_objects.sort(key= lambda x: x.draw_order)
 
@@ -338,7 +364,10 @@ def handle_events(events):
         keys_pressed['Wkey'] = 0
         keys_pressed['Skey'] = 0
         keys_pressed['Dkey'] = 0
-        menu_state = 'final'
+        if(hero.chance==1):
+            menu_state = 'first_time_caught'
+        elif(hero.chance==0):
+            menu_state = 'bad_cheat_final'
 
 
 def restart_game():
@@ -352,7 +381,7 @@ def restart_game():
     game_songs_queue_number = 0
     start_time = pg.time.get_ticks()
     hero.points = 0
-    hero.chance=3
+    hero.chance=2
 
 
 def play_music(song_name, song_start_time=0):
@@ -392,10 +421,9 @@ def timer():
 
     if time_left <= 0:
         # place to call function which reacts on the end of time
-        start_time = pg.time.get_ticks()
-        time_left = TIME_LIMIT
-
-    time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
+        time_left = 0
+    else:
+        time_left = TIME_LIMIT - ((pg.time.get_ticks()-start_time)/1000)
 
     time_left_minutes = str(int(int(time_left) // 60))
     time_left_seconds = str(int(int(time_left) % 60))
@@ -472,6 +500,9 @@ while not finished:
             pause_time = pg.time.get_ticks()
             continue_game_button.clicked = True
 
+        if time_left<=0:
+            menu_state = 'final'
+
     elif menu_state == 'pause':
 
         screen.blit(pause_menu_background, (0, 0))
@@ -520,6 +551,8 @@ while not finished:
                 finished = True
             if event.type == STOPPED_PLAYING:
                 music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
+
+
 
     elif menu_state == 'options':
         screen.blit(menu_background, (0, 0))
@@ -584,9 +617,44 @@ while not finished:
         #     if(right_answers[num_of_q]=='A'):
         #         # after_true_answ.blit(screen,(0,0))
 
+    elif menu_state == 'first_time_caught':
+        screen.blit(background, (0, 0))
 
+        timer()
 
+        hero_point = str(float(int(hero.points)) / 1000.0)
+        points = points_font.render(hero_point, True, (255, 255, 255, 255))
+        screen.blit(points, (1000, 53))
 
+        for obj in visible_objects:
+            if obj.visible:
+                obj.draw()
+
+        contin_quiz = cheated1.talk()
+        if not contin_quiz:
+            menu_state = 'game'
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
+    elif menu_state=='bad_cheat_final':
+        screen.blit(background, (0, 0))
+
+        timer()
+
+        hero_point = str(float(int(hero.points)) / 1000.0)
+        points = points_font.render(hero_point, True, (255, 255, 255, 255))
+        screen.blit(points, (1000, 53))
+
+        for obj in visible_objects:
+            if obj.visible:
+                obj.draw()
+
+        contin_quiz = cheated2.talk()
+        if not contin_quiz:
+            screen.blit(otchislen_img, (0,0))
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                finished = True
 
 
 
