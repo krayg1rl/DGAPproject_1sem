@@ -176,7 +176,8 @@ class Teacher:
         rel_angle = math.atan2(rel_pos.y, rel_pos.x) * 180 / math.pi + 90
         if rel_angle < 0:
             rel_angle += 360
-        return rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
+        ans = rel_pos.magnitude() < self.vision_range and is_close(rel_angle, self.npc.an, self.look_angle/2)
+        return ans and (student.near_student or not student.sitting)
 
 class Student:
     def __init__(self, object):
@@ -407,6 +408,7 @@ class Artifact:
     def __init__(self, objects, art_id):
         self.obj = objects[art_id]
         self.interactive = Interactive(objects[art_id])
+        self.obj.draw_order = 1
         self.speed_mult = 1
         self.cheat_mult = 1
         self.points_add = 0
@@ -421,6 +423,11 @@ class Artifact:
         character.base_point_speed *= self.speed_mult
         character.speed *= self.speed_mult
         character.points += self.points_add
+
+    def generate_pos(self, positions : pg.Vector2, offset : pg.Vector2, rd_box : pg.Vector2):
+        ptr = rd.randint(0, len(positions) - 1)
+        pos = pg.Vector2((rd.random()-0.5) * rd_box.x, (rd.random()-0.5) * rd_box.y)
+        self.interactive.set_pos(positions[ptr] + pos + offset)
 
     def check_for_pickup(self, character):
         if self.interactive.near_character(character):
