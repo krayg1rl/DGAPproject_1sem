@@ -293,7 +293,7 @@ class Main_character:
         self.obj.draw_order = 2
         self.draw_order_changed = False
 
-        self.position = self.image.get_rect(center=(100, 100))
+        self.position = self.image.get_rect(center=(100, HEIGHT/2))
         self.position.height = self.position.height/2
         self.screen = screen
         self.points = 0

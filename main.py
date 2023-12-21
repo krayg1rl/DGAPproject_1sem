@@ -13,7 +13,7 @@ FPS = 30
 
 draw_order_changed = False
 
-TIME_LIMIT = 300  # In seconds
+TIME_LIMIT = 10  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.15
 
@@ -54,7 +54,7 @@ otchislen_img = pg.transform.scale(pg.image.load("pictures/Otchislen.png"), (WID
 """
 load cards for final game
 """
-
+time_out = pg.transform.scale(pg.image.load("pictures/Time_out.png"), (WIDTH, HEIGHT))
 koldunov_question = pg.transform.scale(pg.image.load("pictures/Koldunov_question.png"), (WIDTH, HEIGHT))
 koldunov_positive = pg.transform.scale(pg.image.load("pictures/koldunov_positive.png"), (WIDTH, HEIGHT))
 koldunov_negative = pg.transform.scale(pg.image.load("pictures/Koldunov_negative.png"), (WIDTH, HEIGHT))
@@ -96,6 +96,8 @@ negative_reactions_f =[]
 right_answers_f = []
 actions_f =[]
 
+maincards_f.append(time_out)
+actions_f.append('M')
 
 testcards_f.append(koldunov_question)
 positive_reactions_f.append(koldunov_positive)
@@ -119,7 +121,7 @@ testcards_f.append(ovchinkin_question)
 positive_reactions_f.append(ovchinkin_positive)
 negative_reactions_f.append(ovchinkin_negative)
 actions_f.append('T')
-right_answers_f.append('D')
+right_answers_f.append('C')
 
 
 testcards_f.append(kiselev_question)
@@ -372,6 +374,7 @@ def restart_game():
     hero.chance=2
 
 
+
 def play_music(song_name, song_start_time=0):
     global song_playing
 
@@ -509,6 +512,7 @@ while not finished:
             restart_game()
             menu_state = 'game'
         if quit_button_pause.draw(screen):
+            restart_game()
             menu_state = 'main'
             settings_button_text.clicked = True
             quit_button.clicked = True
