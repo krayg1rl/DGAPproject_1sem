@@ -719,6 +719,7 @@ while not finished:
         contin_quiz = cheated2.talk()
         if not contin_quiz:
             screen.blit(otchislen_img, (0,0))
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 finished = True
