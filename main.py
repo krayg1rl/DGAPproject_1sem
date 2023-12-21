@@ -13,7 +13,7 @@ FPS = 30
 
 draw_order_changed = False
 
-TIME_LIMIT = 10  # In seconds
+TIME_LIMIT = 300  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.15
 
@@ -590,7 +590,7 @@ while not finished:
 
         contin_quiz = final_dialog.talk()
         if not contin_quiz:
-            menu_state = 'game'
+            screen.blit
         # screen.blit(questions[num_of_q], questions_rect[num_of_q])
         # if a_button.draw(screen):
         #     if(right_answers[num_of_q]=='A'):

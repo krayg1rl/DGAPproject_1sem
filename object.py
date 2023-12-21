@@ -488,6 +488,7 @@ class Dialog:
                 if ovch_button.draw(self.screen):
                     self.number_of_action+=1
                     self.number_of_test_card+=1
+                    self.points+=1
                     self.is_answered=False
                     self.answer=False
             else:
@@ -497,6 +498,7 @@ class Dialog:
                     self.number_of_test_card+=1
                     self.is_answered=False
                     self.answer=False
+                    self.points-=1
     def talk(self):
         if self.number_of_action<len(self.actions):
             if self.actions[self.number_of_action]=='M':
