@@ -16,6 +16,7 @@ draw_order_changed = False
 TIME_LIMIT = 300  # In seconds
 
 DEFAULT_MUSIC_VOLUME = 0.15
+DEFAULT_SOUND_VOLUME = 0.5
 
 pg.init()
 
@@ -167,6 +168,9 @@ continue_game_button_img = pg.image.load("pictures/continue_game_button.png").co
 restart_button_img = pg.image.load("pictures/restart_button.png").convert_alpha()
 return_button_img = pg.image.load("pictures/return_button.png").convert_alpha()
 info_button_img = pg.image.load("pictures/info_button.png").convert_alpha()
+volume_button_img = pg.image.load("pictures/volume_button.png").convert_alpha()
+volume_on_button_img = pg.image.load("pictures/volume_on_button.png").convert_alpha()
+volume_off_button_img = pg.image.load("pictures/volume_off_button.png").convert_alpha()
 
 # a_button_img = pg.image.load("pictures/A_img.png").convert_alpha()
 # b_button_img = pg.image.load("pictures/B_img.png")
@@ -200,6 +204,7 @@ music_transitioning_running = (False, 0, 'none', 0)
 STOPPED_PLAYING = pg.USEREVENT + 1
 pg.mixer.music.set_endevent(STOPPED_PLAYING)
 song_pause_time = 0.0
+is_game_volume_on = True
 
 # initialiasating buttons
 settings_button = menu.Button(WIDTH / 3, HEIGHT / 3, settings_button_img, 1)
@@ -213,7 +218,11 @@ continue_game_button = menu.Button(WIDTH - pause_game_button_img.get_width() * 3
 return_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
 restart_button = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 3, restart_button_img, 6)
 quit_button_pause = menu.Button(WIDTH / 2 - 95, HEIGHT / 2 + 93, quit_button_img, 5.5)
-return_button_settings = menu.Button(WIDTH / 2 - 95, HEIGHT / 3 + 28, return_button_img, 6)
+return_button_settings = menu.Button(WIDTH / 2, HEIGHT / 2 + 50, return_button_img, 6)
+volume_button = menu.Button(WIDTH / 2, HEIGHT / 2 - 50, volume_button_img, 6)
+volume_on_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_on_button_img, 6)
+volume_off_button = menu.Button(WIDTH / 2 + 260, HEIGHT / 2 - 50, volume_off_button_img, 6)
+
 info_button = menu.Button(120, 80, info_button_img, 5)
 buttons_height = HEIGHT*0.75
 # a_button = menu.Button(WIDTH/2-100, buttons_height, a_button_img, 1)
@@ -373,8 +382,10 @@ def handle_events(events):
         hero.obj.draw_order = 0
         if(hero.chance==1):
             menu_state = 'first_time_caught'
+            cheating_sound.stop()
         elif(hero.chance==0):
             menu_state = 'bad_cheat_final'
+            cheating_sound.stop()
 
 
 def restart_game():
@@ -503,11 +514,13 @@ while not finished:
         if pause_game_button.draw(screen):
             menu_state = 'pause'
             pg.mixer.music.pause()
+            cheating_sound.stop()
             pause_time = pg.time.get_ticks()
             continue_game_button.clicked = True
 
         if time_left<=0:
             menu_state = 'final'
+            cheating_sound.stop()
 
     elif menu_state == 'pause':
 
@@ -543,6 +556,7 @@ while not finished:
             song_playing = 'main_menu_theme'
 
         if settings_button_text.draw(screen):
+            volume_button.clicked = True
             menu_state = 'options'
         if quit_button.draw(screen):
             finished = True
@@ -566,6 +580,31 @@ while not finished:
         if song_playing not in ['main_menu_theme']:
             music_transitioning_running = (True, pg.time.get_ticks(), 'main_menu_theme', 0)
             song_playing = 'main_menu_theme'
+
+        if volume_button.draw(screen):
+            if is_game_volume_on:
+                DEFAULT_MUSIC_VOLUME = 0
+                pg.mixer.music.set_volume(0)
+                pg.mixer.Sound.set_volume(cheating_sound, 0)
+                is_game_volume_on = False
+            else:
+                DEFAULT_MUSIC_VOLUME = 0.5
+                pg.mixer.music.set_volume(DEFAULT_MUSIC_VOLUME)
+                pg.mixer.Sound.set_volume(cheating_sound, DEFAULT_SOUND_VOLUME)
+                is_game_volume_on = True
+
+        if is_game_volume_on:
+            volume_on_button.draw(screen)
+        else:
+            volume_off_button.draw(screen)
+
+        if return_button_settings.draw(screen):
+            settings_button_text.clicked = True
+            quit_button.clicked = True
+            menu_state = 'main'
+
+        if info_button.draw((screen)):
+            menu_state = 'info'
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
