@@ -428,6 +428,7 @@ def timer():
 
     screen.blit(time_passed, (WIDTH / 7.11, HEIGHT / 13.585))
 
+
 while not finished:
 
     clock.tick(FPS)
@@ -477,7 +478,6 @@ while not finished:
 
         else:
             if song_playing == 'kiselev_theme':
-                print('kiselev end')
                 music_transitioning_running = (True, pg.time.get_ticks(), game_songs_queue[game_songs_queue_number], song_pause_time)
                 song_playing = game_songs_queue[game_songs_queue_number]
 
